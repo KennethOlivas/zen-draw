@@ -380,13 +380,15 @@ export function CollapsiblePropertyPanel({
 
             {/* Collapse button */}
             <Tooltip>
-              <TooltipTrigger asChild className="absolute right-0 -top-1">
+              <TooltipTrigger asChild className={cn(
+                isExpanded && "absolute right-0 -top-1"
+              )}>
                 <Button
                   variant="ghost"
                   size="icon"
                   className={cn(
                     "rounded-lg shrink-0",
-                    isExpanded ? "h-9 w-9 m-1.5" : "h-10 w-10"
+                    isExpanded && "m-1.5"
                   )}
                   style={{
                     transitionProperty: "height, width, margin",
