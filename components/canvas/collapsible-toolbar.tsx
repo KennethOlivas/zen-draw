@@ -126,7 +126,7 @@ export function CollapsibleToolbar({
             transitionTimingFunction: "ease-out",
           }}
         >
-          <div className="flex items-center gap-1">
+          <div className={cn("flex items-center ", isExpanded ? "gap-1" : "gap-0")}>
             {/* Collapse/Expand button */}
             <Tooltip>
               <TooltipTrigger asChild>

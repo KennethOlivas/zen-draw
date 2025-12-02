@@ -127,13 +127,13 @@ export function CollapsiblePropertyPanel({
         }}
       >
         <div className="bg-toolbar-bg border border-toolbar-border rounded-xl shadow-lg overflow-hidden">
-          <div className="flex">
+      
             {/* Panel content */}
             <div
               className={cn(
                 "overflow-hidden",
                 isExpanded
-                  ? "max-w-[200px] opacity-100 p-3 pr-0"
+                  ? "max-w-[200px] opacity-100 p-4 "
                   : "max-w-0 opacity-0 p-0"
               )}
               style={{
@@ -408,7 +408,7 @@ export function CollapsiblePropertyPanel({
                 {isExpanded ? "Collapse panel" : "Expand panel"}
               </TooltipContent>
             </Tooltip>
-          </div>
+         
         </div>
       </div>
     </TooltipProvider>
