@@ -7,6 +7,12 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "My Projects",
+  description: "Manage your Zen Draw projects.",
+};
 
 export default async function ProjectsPage() {
   const session = await auth.api.getSession({
