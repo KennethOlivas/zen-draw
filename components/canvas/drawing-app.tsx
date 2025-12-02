@@ -13,7 +13,7 @@ import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 
 import { createProject, saveProject, updateProjectShare } from "@/actions/project"
 import { TopBar } from "./top-bar"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Data } from "@/types/canvas-types"
 
@@ -37,6 +37,8 @@ export function DrawingApp({
   publicPermission = "VIEW",
 }: DrawingAppProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const forceNew = searchParams?.get("new") === "true"
   const {
     state,
     setTool,
@@ -67,7 +69,7 @@ export function DrawingApp({
     undo,
     redo,
     pushHistory,
-  } = useCanvasState(initialData)
+  } = useCanvasState(initialData, projectId, forceNew)
 
   const [isDark, setIsDark] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)

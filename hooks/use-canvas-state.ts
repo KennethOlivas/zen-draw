@@ -35,7 +35,7 @@ function generateSeed(): number {
   return Math.floor(Math.random() * 1000000)
 }
 
-export function useCanvasState(initialData?: any) {
+export function useCanvasState(initialData?: any, projectId?: string, forceNew?: boolean) {
   const [state, setState] = useState<CanvasState>({
     elements: initialData?.elements || [],
     selectedIds: [],
@@ -70,32 +70,44 @@ export function useCanvasState(initialData?: any) {
 
   // Auto-save to localStorage
   useEffect(() => {
-    const saved = localStorage.getItem(AUTO_SAVE_KEY)
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved)
-        onSetState(parsed)
-      } catch (e) {
-        console.error("Failed to load auto-save:", e)
+    if (forceNew) {
+      localStorage.removeItem(AUTO_SAVE_KEY)
+      return
+    }
+
+    // Only load from auto-save if we are NOT in a project (scratchpad mode)
+    // and no initial data was provided (though initialData is usually undefined for scratchpad)
+    if (!projectId && !initialData) {
+      const saved = localStorage.getItem(AUTO_SAVE_KEY)
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          onSetState(parsed)
+        } catch (e) {
+          console.error("Failed to load auto-save:", e)
+        }
       }
     }
-  }, [])
+  }, [projectId, initialData, forceNew])
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      localStorage.setItem(
-        AUTO_SAVE_KEY,
-        JSON.stringify({
-          elements: state.elements,
-          zoom: state.zoom,
-          panOffset: state.panOffset,
-          backgroundColor: state.backgroundColor,
-        }),
-      )
-    }, 1000)
+    // Only auto-save to the generic key if we are in scratchpad mode
+    if (!projectId) {
+      const timeoutId = setTimeout(() => {
+        localStorage.setItem(
+          AUTO_SAVE_KEY,
+          JSON.stringify({
+            elements: state.elements,
+            zoom: state.zoom,
+            panOffset: state.panOffset,
+            backgroundColor: state.backgroundColor,
+          }),
+        )
+      }, 1000)
 
-    return () => clearTimeout(timeoutId)
-  }, [state.elements, state.zoom, state.panOffset, state.backgroundColor])
+      return () => clearTimeout(timeoutId)
+    }
+  }, [state.elements, state.zoom, state.panOffset, state.backgroundColor, projectId])
 
   // Push to history
   const pushHistory = useCallback(() => {

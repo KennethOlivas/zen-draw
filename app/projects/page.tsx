@@ -12,7 +12,7 @@ export default async function ProjectsPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-[#1a1a1a]">My Projects</h1>
-          <Link href="/board">
+          <Link href="/board?new=true">
             <Button className="bg-[#1a1a1a] text-white hover:bg-[#333] gap-2">
               <Plus className="w-4 h-4" />
               New Project
@@ -23,7 +23,7 @@ export default async function ProjectsPage() {
         {projects.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-xl text-gray-500 mb-4">No projects yet.</p>
-            <Link href="/board">
+            <Link href="/board?new=true">
               <Button variant="outline" className="border-2 border-[#1a1a1a]">
                 Start Drawing
               </Button>
