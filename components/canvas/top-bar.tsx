@@ -2,7 +2,7 @@
 
 import { useEffect, useEffectEvent, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Share2, Copy, Check } from "lucide-react";
+import { ArrowLeft, Save, Share2, Copy, Check, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,6 +40,7 @@ interface TopBarProps {
   publicPermission: string;
   onSave: (name: string, asNew: boolean) => void;
   onShare: (isPublic: boolean, permission: "VIEW" | "EDIT") => void;
+  onRename: (newName: string) => void;
 }
 
 export function TopBar({
@@ -51,10 +52,13 @@ export function TopBar({
   publicPermission: initialPublicPermission,
   onSave,
   onShare,
+  onRename,
 }: TopBarProps) {
   const [isSaveAsOpen, setIsSaveAsOpen] = useState(false);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState(projectName);
+  const [renameValue, setRenameValue] = useState(projectName);
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [permission, setPermission] = useState<"VIEW" | "EDIT">(
     initialPublicPermission as "VIEW" | "EDIT"
@@ -85,6 +89,11 @@ export function TopBar({
     setIsShareOpen(false);
   };
 
+  const handleRename = () => {
+    onRename(renameValue);
+    setIsRenameOpen(false);
+  };
+
   const copyLink = () => {
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
@@ -99,7 +108,22 @@ export function TopBar({
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <span className="font-bold text-sm px-2">{projectName}</span>
+        <div className="flex items-center gap-2 px-2">
+          <span className="font-bold text-sm">{projectName}</span>
+          {isOwner && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setRenameValue(projectName);
+                setIsRenameOpen(true);
+              }}
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="pointer-events-auto flex items-center gap-2 bg-toolbar-bg backdrop-blur-sm p-2 rounded-xl border shadow-sm">
@@ -223,7 +247,31 @@ export function TopBar({
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleShareSave}>Done</Button>
+            <Button onClick={handleShareSave}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename Project</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              placeholder="Project Name"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleRename();
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRenameOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleRename}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

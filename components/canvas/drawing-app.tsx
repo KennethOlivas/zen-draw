@@ -11,7 +11,7 @@ import { useCanvasState } from "@/hooks/use-canvas-state"
 import { exportPNG, exportSVG, generateThumbnail } from "@/lib/file-utils"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 
-import { createProject, saveProject, updateProjectShare } from "@/actions/project"
+import { createProject, saveProject, updateProjectShare, renameProject } from "@/actions/project"
 import { TopBar } from "./top-bar"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -117,6 +117,16 @@ export function DrawingApp({
     }
   }
 
+  const handleRename = async (newName: string) => {
+    if (!projectId) return
+    try {
+      await renameProject(projectId, newName)
+      toast.success("Project renamed")
+    } catch (error) {
+      toast.error("Failed to rename project")
+    }
+  }
+
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
@@ -218,6 +228,7 @@ export function DrawingApp({
         publicPermission={publicPermission}
         onSave={handleSave}
         onShare={handleShare}
+        onRename={handleRename}
       />
 
       <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileChange} />
