@@ -5,6 +5,7 @@ interface CanvasElementLayerProps {
     elements: CanvasElement[]
     panOffset: { x: number; y: number }
     zoom: number
+    editingElementId?: string | null
 }
 
 function getStrokeDashArray(style: string | undefined, strokeWidth: number): string {
@@ -18,7 +19,7 @@ function getStrokeDashArray(style: string | undefined, strokeWidth: number): str
     }
 }
 
-export function CanvasElementLayer({ elements, panOffset, zoom }: CanvasElementLayerProps) {
+export function CanvasElementLayer({ elements, panOffset, zoom, editingElementId }: CanvasElementLayerProps) {
     return (
         <svg
             className="absolute inset-0 w-full h-full pointer-events-none"
@@ -28,6 +29,8 @@ export function CanvasElementLayer({ elements, panOffset, zoom }: CanvasElementL
             }}
         >
             {elements.map((element) => {
+                if (element.id === editingElementId) return null
+
                 if (element.type === "text") {
                     return (
                         <text

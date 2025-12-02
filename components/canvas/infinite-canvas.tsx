@@ -78,6 +78,7 @@ export function InfiniteCanvas({
     y: 0,
     visible: false,
   })
+  const [editingElementId, setEditingElementId] = useState<string | null>(null)
   const textInputRef = useRef<HTMLTextAreaElement>(null) as RefObject<HTMLTextAreaElement>
 
   const [resizeHandle, setResizeHandle] = useState<ResizeHandle>(null)
@@ -186,6 +187,30 @@ export function InfiniteCanvas({
       }
     }
     return null
+  }
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if (readOnly) return
+
+    const point = screenToCanvas(e.clientX, e.clientY)
+    const element = getElementAtPoint(point)
+
+    if (element && element.type === "text") {
+      setEditingElementId(element.id)
+      setTextInput({ x: element.x, y: element.y, visible: true })
+
+      setTimeout(() => {
+        if (textInputRef.current) {
+          textInputRef.current.value = element.text || ""
+          textInputRef.current.style.height = "auto"
+          textInputRef.current.style.height = textInputRef.current.scrollHeight + "px"
+          textInputRef.current.style.width = "auto"
+          textInputRef.current.style.width = Math.max(100, textInputRef.current.scrollWidth) + "px"
+          textInputRef.current.focus()
+          textInputRef.current.select()
+        }
+      }, 0)
+    }
   }
 
   // Handle pointer down
@@ -449,24 +474,29 @@ export function InfiniteCanvas({
   const handleTextSubmit = () => {
     const text = textInputRef.current?.value.trim()
     if (text) {
-      onAddElement({
-        type: "text",
-        x: textInput.x,
-        y: textInput.y,
-        width: 200,
-        height: 30,
-        text,
-        strokeColor,
-        fillColor: "transparent",
-        strokeWidth: 1,
-        opacity,
-        fontSize,
-        rotation: 0,
-        roughness: 0,
-      })
+      if (editingElementId) {
+        onUpdateElement(editingElementId, { text })
+      } else {
+        onAddElement({
+          type: "text",
+          x: textInput.x,
+          y: textInput.y,
+          width: 200,
+          height: 30,
+          text,
+          strokeColor,
+          fillColor: "transparent",
+          strokeWidth: 1,
+          opacity,
+          fontSize,
+          rotation: 0,
+          roughness: 0,
+        })
+      }
       onFinishDrawing()
     }
     setTextInput({ ...textInput, visible: false })
+    setEditingElementId(null)
     if (textInputRef.current) {
       textInputRef.current.value = ""
     }
@@ -478,6 +508,7 @@ export function InfiniteCanvas({
       if (textInput.visible) {
         if (e.key === "Escape") {
           setTextInput({ ...textInput, visible: false })
+          setEditingElementId(null)
         } else if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault()
           handleTextSubmit()
@@ -512,6 +543,7 @@ export function InfiniteCanvas({
         backgroundColor,
         cursor: getCursor(),
       }}
+      onDoubleClick={handleDoubleClick}
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -520,7 +552,7 @@ export function InfiniteCanvas({
     >
       <CanvasGrid zoom={zoom} panOffset={panOffset} />
 
-      <CanvasElementLayer elements={elements} panOffset={panOffset} zoom={zoom} />
+      <CanvasElementLayer elements={elements} panOffset={panOffset} zoom={zoom} editingElementId={editingElementId} />
 
       <ConnectionPointsLayer
         elements={elements}

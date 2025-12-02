@@ -1,4 +1,4 @@
-import { RefObject } from "react"
+import { RefObject, useEffect } from "react"
 
 interface TextInputOverlayProps {
     visible: boolean
@@ -23,22 +23,42 @@ export function TextInputOverlay({
     onBlur,
     onKeyDown,
 }: TextInputOverlayProps) {
+    useEffect(() => {
+        if (visible && textInputRef.current) {
+            const el = textInputRef.current
+            el.style.height = "auto"
+            el.style.height = el.scrollHeight + "px"
+            el.style.width = "auto"
+            el.style.width = Math.max(100, el.scrollWidth) + "px"
+        }
+    }, [visible, textInputRef])
+
+    const handleInput = () => {
+        if (textInputRef.current) {
+            const el = textInputRef.current
+            el.style.height = "auto"
+            el.style.height = el.scrollHeight + "px"
+            el.style.width = "auto"
+            el.style.width = Math.max(100, el.scrollWidth) + "px"
+        }
+    }
+
     if (!visible) return null
 
     return (
         <textarea
             ref={textInputRef}
-            className="absolute bg-transparent border-2 border-primary rounded p-2 outline-none resize-none font-[Virgil] text-foreground"
+            className="absolute bg-transparent border-2 border-primary rounded p-2 outline-none resize-none font-[Virgil] text-foreground overflow-hidden"
             style={{
                 left: x * zoom + panOffset.x,
                 top: y * zoom + panOffset.y,
-                minWidth: 200,
-                minHeight: 40,
                 fontSize: fontSize * zoom,
+                lineHeight: 1,
             }}
             placeholder="Type here..."
             onBlur={onBlur}
             onKeyDown={onKeyDown}
+            onInput={handleInput}
         />
     )
 }
