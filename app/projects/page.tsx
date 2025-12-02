@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default async function ProjectsPage() {
   const session = await auth.api.getSession({
@@ -19,16 +20,19 @@ export default async function ProjectsPage() {
   const projects = await getProjects();
 
   return (
-    <div className="min-h-screen bg-[#fdfdfd] p-8 font-['Virgil']">
+    <div className="min-h-screen bg-background p-8 font-['Virgil']">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-[#1a1a1a]">My Projects</h1>
-          <Link href="/board?new=true">
-            <Button className="bg-[#1a1a1a] text-white hover:bg-[#333] gap-2">
-              <Plus className="w-4 h-4" />
-              New Project
-            </Button>
-          </Link>
+          <h1 className="text-4xl font-bold text-primary">My Projects</h1>
+          <div className="flex items-center gap-4">
+            <ModeToggle />
+            <Link href="/board?new=true">
+              <Button>
+                <Plus className="w-4 h-4" />
+                New Project
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {projects.length === 0 ? (

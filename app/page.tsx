@@ -25,16 +25,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Highlighter } from "@/components/ui/highlighter";
+import { ModeToggle } from "@/components/mode-toggle";
 
 // FAQ Component
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-2 border-[#1a1a1a] rounded-lg overflow-hidden bg-white mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+    <div className="border-2 border-foreground rounded-lg overflow-hidden bg-card mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
+        className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-muted/50 transition-colors"
       >
         <span className="font-bold text-lg">{question}</span>
         {isOpen ? (
@@ -44,7 +45,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         )}
       </button>
       {isOpen && (
-        <div className="px-6 py-4 border-t-2 border-[#1a1a1a] bg-gray-50 text-gray-600">
+        <div className="px-6 py-4 border-t-2 border-foreground bg-muted/50 text-muted-foreground">
           {answer}
         </div>
       )}
@@ -95,9 +96,9 @@ const TypingAnimation = ({
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#fdfdfd] text-[#1a1a1a] font-['Virgil'] selection:bg-yellow-200">
+    <div className="min-h-screen bg-background text-foreground font-['Virgil'] selection:bg-yellow-200">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-4 bg-[#fdfdfd]/90 backdrop-blur-sm border-b-2 border-[#1a1a1a] border-dashed">
+      <nav className="fixed top-0 w-full z-50 px-6 py-4 bg-background/90 backdrop-blur-sm border-b-2 border-foreground border-dashed">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Pencil className="w-6 h-6" />
@@ -124,6 +125,7 @@ export default function LandingPage() {
             </a>
           </div>
           <div className="flex items-center gap-4">
+            <ModeToggle />
             <Link
               href="/login"
               className="hidden md:block hover:underline decoration-2 underline-offset-4"
@@ -132,7 +134,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/signup"
-              className="px-4 py-2 border-2 border-[#1a1a1a] rounded-lg hover:bg-[#1a1a1a] hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="px-4 py-2 border-2 border-foreground rounded-lg hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               Sign Up
             </Link>
@@ -465,7 +467,7 @@ export default function LandingPage() {
         {/* FAQ Section */}
         <section
           id="faq"
-          className="px-6 py-20 bg-gray-50 border-t-2 border-[#1a1a1a] border-dashed"
+          className="px-6 py-20 bg-muted/50 border-t-2 border-foreground border-dashed"
         >
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold mb-12 text-center">

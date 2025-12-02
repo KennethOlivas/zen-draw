@@ -15,10 +15,19 @@ export default async function ProjectBoardPage({ params }: PageProps) {
     notFound();
   }
 
+  let initialData = project.data;
+  if (typeof initialData === "string") {
+    try {
+      initialData = JSON.parse(initialData);
+    } catch (e) {
+      console.error("Failed to parse project data", e);
+    }
+  }
+
   return (
     <DrawingApp
       projectId={project.id}
-      initialData={project.data as unknown as Data}
+      initialData={initialData as unknown as Data}
       projectName={project.name}
       isOwner={project.isOwner}
       canEdit={project.canEdit}

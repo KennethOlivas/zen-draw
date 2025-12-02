@@ -16,6 +16,15 @@ import { TopBar } from "./top-bar"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Data } from "@/types/canvas-types"
+import { useTheme } from "next-themes"
+
+const DARK_BACKGROUNDS = [
+  "#121212",
+  "#161718",
+  "#13171C",
+  "#181605",
+  "#1B1615",
+]
 
 interface DrawingAppProps {
   projectId?: string
@@ -71,7 +80,6 @@ export function DrawingApp({
     pushHistory,
   } = useCanvasState(initialData, projectId, forceNew)
 
-  const [isDark, setIsDark] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = async (name: string, asNew: boolean = false) => {
@@ -131,26 +139,20 @@ export function DrawingApp({
     }
   }, [])
 
-  const onSetIsDark = useEffectEvent((dark: boolean) => {
-    setIsDark(dark)
-  })
-
-  // Theme handling
-  useEffect(() => {
-    const stored = localStorage.getItem("theme")
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    const dark = stored === "dark" || (!stored && prefersDark)
-    onSetIsDark(dark)
-    document.documentElement.classList.toggle("dark", dark)
-  }, [])
+  const { setTheme, resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
 
   const toggleDark = () => {
-    setIsDark((prev) => {
-      const newValue = !prev
-      localStorage.setItem("theme", newValue ? "dark" : "light")
-      document.documentElement.classList.toggle("dark", newValue)
-      return newValue
-    })
+    setTheme(isDark ? "light" : "dark")
+  }
+
+  const handleBackgroundChange = (color: string) => {
+    setBackgroundColor(color)
+    if (DARK_BACKGROUNDS.includes(color)) {
+      setTheme("dark")
+    } else {
+      setTheme("light")
+    }
   }
 
   const selectedElement =
@@ -235,7 +237,7 @@ export function DrawingApp({
             isDark={isDark}
             onToggleDark={toggleDark}
             backgroundColor={state.backgroundColor}
-            onBackgroundChange={setBackgroundColor}
+            onBackgroundChange={handleBackgroundChange}
           />
 
           <CollapsiblePropertyPanel

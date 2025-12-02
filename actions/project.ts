@@ -17,12 +17,10 @@ export async function createProject(name: string, data: Data, thumbnail?: string
     throw new Error("Unauthorized");
   }
 
-  const jsonData = JSON.stringify(data);
-
   const project = await prisma.project.create({
     data: {
       name,
-      data: jsonData,
+      data: data as any,
       thumbnail,
       ownerId: session.user.id,
     },
@@ -57,12 +55,10 @@ export async function saveProject(id: string, data: Data, thumbnail?: string) {
     throw new Error("Forbidden");
   }
 
-  const jsonData = JSON.stringify(data);
-
   const updatedProject = await prisma.project.update({
     where: { id },
     data: {
-      data: jsonData,
+      data: data as any,
       thumbnail: thumbnail || project.thumbnail,
     },
   });
