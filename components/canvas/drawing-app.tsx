@@ -262,6 +262,7 @@ export function DrawingApp({
             fontSize={state.fontSize}
             textAlign={state.textAlign}
             selectedType={selectedElement?.type}
+            currentTool={state.tool}
             onStrokeColorChange={setStrokeColor}
             onFillColorChange={setFillColor}
             onStrokeWidthChange={setStrokeWidth}
