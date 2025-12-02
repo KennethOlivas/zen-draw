@@ -8,10 +8,35 @@ import { CollapsibleToolbar } from "./collapsible-toolbar"
 import { CollapsiblePropertyPanel } from "./collapsible-property-panel"
 import { ZoomControls } from "./zoom-controls"
 import { useCanvasState } from "@/hooks/use-canvas-state"
-import { exportPNG, exportSVG } from "@/lib/file-utils"
+import { exportPNG, exportSVG, generateThumbnail } from "@/lib/file-utils"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 
-export function DrawingApp() {
+import { createProject, saveProject, updateProjectShare } from "@/actions/project"
+import { TopBar } from "./top-bar"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { Data } from "@/types/canvas-types"
+
+interface DrawingAppProps {
+  projectId?: string
+  initialData?: Data
+  projectName?: string
+  isOwner?: boolean
+  canEdit?: boolean
+  isPublic?: boolean
+  publicPermission?: string
+}
+
+export function DrawingApp({
+  projectId,
+  initialData,
+  projectName = "Untitled Project",
+  isOwner = true,
+  canEdit = true,
+  isPublic = false,
+  publicPermission = "VIEW",
+}: DrawingAppProps) {
+  const router = useRouter()
   const {
     state,
     setTool,
@@ -42,10 +67,45 @@ export function DrawingApp() {
     undo,
     redo,
     pushHistory,
-  } = useCanvasState()
+  } = useCanvasState(initialData)
 
   const [isDark, setIsDark] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleSave = async (name: string, asNew: boolean = false) => {
+    try {
+      const thumbnail = await generateThumbnail(state.elements, state.backgroundColor)
+      
+      const projectData = {
+        elements: state.elements,
+        zoom: state.zoom,
+        panOffset: state.panOffset,
+        backgroundColor: state.backgroundColor,
+      }
+
+      if (projectId && !asNew) {
+        await saveProject(projectId, projectData, thumbnail)
+        toast.success("Project saved")
+      } else {
+        const newProject = await createProject(name, projectData, thumbnail)
+        toast.success("Project created")
+        router.push(`/board/${newProject.id}`)
+      }
+    } catch (error) {
+      toast.error("Failed to save project")
+      console.error(error)
+    }
+  }
+
+  const handleShare = async (isPublic: boolean, permission: "VIEW" | "EDIT") => {
+    if (!projectId) return
+    try {
+      await updateProjectShare(projectId, isPublic, permission)
+      toast.success("Share settings updated")
+    } catch (error) {
+      toast.error("Failed to update share settings")
+    }
+  }
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -144,7 +204,17 @@ export function DrawingApp() {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
+    <div className="h-screen w-screen overflow-hidden relative">
+      <TopBar
+        projectName={projectName}
+        isOwner={isOwner}
+        canEdit={canEdit}
+        isPublic={isPublic}
+        publicPermission={publicPermission}
+        onSave={handleSave}
+        onShare={handleShare}
+      />
+
       <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileChange} />
 
       <CollapsibleToolbar

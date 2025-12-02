@@ -75,3 +75,11 @@ export interface HistoryEntry {
   elements: CanvasElement[]
   selectedIds: string[]
 }
+
+
+export type Data = {
+     elements: CanvasElement[];
+    zoom: number;
+    panOffset: Point;
+    backgroundColor: string;
+}

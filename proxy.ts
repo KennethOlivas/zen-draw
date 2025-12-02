@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
 
   // Redirect to /board if logged in and trying to access login/signup
   if (isAuth && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/board", request.url));
+    return NextResponse.redirect(new URL("/projects", request.url));
   }
 
   return NextResponse.next();

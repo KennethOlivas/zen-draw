@@ -35,23 +35,23 @@ function generateSeed(): number {
   return Math.floor(Math.random() * 1000000)
 }
 
-export function useCanvasState() {
+export function useCanvasState(initialData?: any) {
   const [state, setState] = useState<CanvasState>({
-    elements: [],
+    elements: initialData?.elements || [],
     selectedIds: [],
-    zoom: 1,
-    panOffset: { x: 0, y: 0 },
+    zoom: initialData?.zoom || 1,
+    panOffset: initialData?.panOffset || { x: 0, y: 0 },
     tool: "select",
-    strokeColor: DEFAULT_STROKE_COLOR,
-    fillColor: DEFAULT_FILL_COLOR,
-    strokeWidth: DEFAULT_STROKE_WIDTH,
-    opacity: DEFAULT_OPACITY,
-    fontSize: DEFAULT_FONT_SIZE,
-    roughness: DEFAULT_ROUGHNESS,
-    backgroundColor: DEFAULT_BACKGROUND_COLOR,
-    strokeStyle: DEFAULT_STROKE_STYLE,
-    edgeStyle: DEFAULT_EDGE_STYLE,
-    textAlign: DEFAULT_TEXT_ALIGN,
+    strokeColor: initialData?.strokeColor || DEFAULT_STROKE_COLOR,
+    fillColor: initialData?.fillColor || DEFAULT_FILL_COLOR,
+    strokeWidth: initialData?.strokeWidth || DEFAULT_STROKE_WIDTH,
+    opacity: initialData?.opacity || DEFAULT_OPACITY,
+    fontSize: initialData?.fontSize || DEFAULT_FONT_SIZE,
+    roughness: initialData?.roughness || DEFAULT_ROUGHNESS,
+    backgroundColor: initialData?.backgroundColor || DEFAULT_BACKGROUND_COLOR,
+    strokeStyle: initialData?.strokeStyle || DEFAULT_STROKE_STYLE,
+    edgeStyle: initialData?.edgeStyle || DEFAULT_EDGE_STYLE,
+    textAlign: initialData?.textAlign || DEFAULT_TEXT_ALIGN,
   })
 
   const historyRef = useRef<HistoryEntry[]>([])
