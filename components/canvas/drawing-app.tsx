@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { InfiniteCanvas } from "./infinite-canvas"
 import { CollapsibleToolbar } from "./collapsible-toolbar"
 import { CollapsiblePropertyPanel } from "./collapsible-property-panel"
@@ -47,12 +47,38 @@ export function DrawingApp() {
   const [isDark, setIsDark] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault()
+      }
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+        e.preventDefault()
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  const onSetIsDark = useEffectEvent((dark: boolean) => {
+    setIsDark(dark)
+  })
+
   // Theme handling
   useEffect(() => {
     const stored = localStorage.getItem("theme")
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     const dark = stored === "dark" || (!stored && prefersDark)
-    setIsDark(dark)
+    onSetIsDark(dark)
     document.documentElement.classList.toggle("dark", dark)
   }, [])
 
