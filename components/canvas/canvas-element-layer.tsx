@@ -45,14 +45,14 @@ export function CanvasElementLayer({ elements, panOffset, zoom }: CanvasElementL
                     )
                 }
 
-                const { path, fill } = renderElementToPath(element, elements)
+                const { path, fill, fillPath } = renderElementToPath(element, elements)
                 const dashArray = getStrokeDashArray(element.strokeStyle, element.strokeWidth)
                 const lineCap = element.edgeStyle === "sharp" ? "square" : "round"
                 const lineJoin = element.edgeStyle === "sharp" ? "miter" : "round"
 
                 return (
                     <g key={element.id} opacity={element.opacity}>
-                        {fill !== "transparent" && fill !== "none" && <path d={path} fill={fill} stroke="none" />}
+                        {fill !== "transparent" && fill !== "none" && <path d={fillPath || path} fill={fill} stroke="none" />}
                         <path
                             d={path}
                             fill="none"

@@ -213,11 +213,23 @@ function generateRoughDiamond(
   return paths.join(" ")
 }
 
+// Generate simple rectangle path for filling
+function generateRectPath(x: number, y: number, width: number, height: number): string {
+  return `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height} L ${x} ${y + height} Z`
+}
+
+// Generate simple diamond path for filling
+function generateDiamondPath(x: number, y: number, width: number, height: number): string {
+  const cx = x + width / 2
+  const cy = y + height / 2
+  return `M ${cx} ${y} L ${x + width} ${cy} L ${cx} ${y + height} L ${x} ${cy} Z`
+}
+
 // Render element to SVG path
 export function renderElementToPath(
   element: CanvasElement,
   allElements?: CanvasElement[],
-): { path: string; fill: string } {
+): { path: string; fill: string; fillPath?: string } {
   const rand = seededRandom(element.seed)
   const { x, y, width, height, roughness } = element
 
@@ -225,12 +237,14 @@ export function renderElementToPath(
     case "rectangle":
       return {
         path: generateRoughRect(x, y, width, height, roughness, rand),
+        fillPath: generateRectPath(x, y, width, height),
         fill: element.fillColor,
       }
 
     case "diamond":
       return {
         path: generateRoughDiamond(x, y, width, height, roughness, rand),
+        fillPath: generateDiamondPath(x, y, width, height),
         fill: element.fillColor,
       }
 

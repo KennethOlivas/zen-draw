@@ -45,13 +45,13 @@ export function exportPNG(elements: CanvasElement[], backgroundColor: string) {
             text.textContent = element.text || ""
             svg.appendChild(text)
         } else {
-            const { path, fill } = renderElementToPath(element, elements)
+            const { path, fill, fillPath: renderFillPath } = renderElementToPath(element, elements)
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g")
             g.setAttribute("opacity", String(element.opacity))
 
             if (fill !== "transparent" && fill !== "none") {
                 const fillPath = document.createElementNS("http://www.w3.org/2000/svg", "path")
-                fillPath.setAttribute("d", path)
+                fillPath.setAttribute("d", renderFillPath || path)
                 fillPath.setAttribute("fill", fill)
                 fillPath.setAttribute("stroke", "none")
                 g.appendChild(fillPath)
@@ -136,10 +136,10 @@ export function exportSVG(elements: CanvasElement[], backgroundColor: string) {
                 }" opacity="${element.opacity}" fontSize="${element.fontSize || 20}" fontFamily="Virgil, cursive">${element.text || ""
                 }</text>\n`
         } else {
-            const { path, fill } = renderElementToPath(element, elements)
+            const { path, fill, fillPath } = renderElementToPath(element, elements)
             svgContent += `  <g opacity="${element.opacity}">\n`
             if (fill !== "transparent" && fill !== "none") {
-                svgContent += `    <path d="${path}" fill="${fill}" stroke="none"/>\n`
+                svgContent += `    <path d="${fillPath || path}" fill="${fill}" stroke="none"/>\n`
             }
             const lineCap = element.edgeStyle === "sharp" ? "square" : "round"
             const lineJoin = element.edgeStyle === "sharp" ? "miter" : "round"
