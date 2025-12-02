@@ -1,6 +1,7 @@
 import { DrawingApp } from "@/components/canvas/drawing-app"
 import type { Viewport, Metadata } from 'next'
 import { Suspense } from "react"
+import { BoardSkeleton } from "@/components/skeletons/board-skeleton"
 
 export const metadata: Metadata = {
   title: "New Board",
@@ -16,7 +17,7 @@ export const viewport: Viewport = {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<BoardSkeleton />}>
       <DrawingApp />
     </Suspense>
   )
