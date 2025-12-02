@@ -38,6 +38,7 @@ interface InfiniteCanvasProps {
   onUpdateElement: (id: string, updates: Partial<CanvasElement>) => void
   onDeleteElements: (ids: string[]) => void
   onFinishDrawing: () => void
+  readOnly?: boolean
 }
 
 type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | null
@@ -64,6 +65,7 @@ export function InfiniteCanvas({
   onUpdateElement,
   onDeleteElements,
   onFinishDrawing,
+  readOnly = false,
 }: InfiniteCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -195,6 +197,20 @@ export function InfiniteCanvas({
     setIsDragging(true)
 
     if (tool === "pan") {
+      return
+    }
+
+    if (readOnly) {
+      if (tool === "select") {
+        const element = getElementAtPoint(point)
+        if (element) {
+          if (!selectedIds.includes(element.id)) {
+            onSelectionChange([element.id])
+          }
+        } else {
+          onSelectionChange([])
+        }
+      }
       return
     }
 

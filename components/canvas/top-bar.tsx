@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Share2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,8 +28,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { QRCode } from "@/components/kibo-ui/qr-code";
+import { usePathname } from "next/dist/client/components/navigation";
 
 interface TopBarProps {
+  projectId?: string;
   projectName: string;
   isOwner: boolean;
   canEdit: boolean;
@@ -40,6 +43,7 @@ interface TopBarProps {
 }
 
 export function TopBar({
+  projectId,
   projectName,
   isOwner,
   canEdit,
@@ -57,6 +61,20 @@ export function TopBar({
   );
   const [copied, setCopied] = useState(false);
 
+  const pathname = usePathname();
+
+  const [fullUrl, setFullUrl] = useState("");
+
+  const onSetFullUrl = useEffectEvent(() => {
+    if (typeof window !== "undefined") {
+      setFullUrl(window.location.origin + pathname);
+    }
+  });
+
+  useEffect(() => {
+    onSetFullUrl();
+  }, [pathname]);
+
   const handleSaveAs = () => {
     onSave(newProjectName, true);
     setIsSaveAsOpen(false);
@@ -68,8 +86,7 @@ export function TopBar({
   };
 
   const copyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -113,10 +130,20 @@ export function TopBar({
             size="sm"
             className="gap-2"
             onClick={() => setIsShareOpen(true)}
+            disabled={!projectId}
+            title={!projectId ? "Save project to share" : "Share project"}
           >
             <Share2 className="h-4 w-4" />
             Share
           </Button>
+        )}
+
+        {!canEdit && (
+          <Link href="/login">
+            <Button size="sm" variant="outline">
+              Login
+            </Button>
+          </Link>
         )}
       </div>
 
@@ -180,10 +207,18 @@ export function TopBar({
               </div>
             )}
 
+            <div className="flex justify-center p-4 bg-white rounded-lg border">
+              <QRCode data={fullUrl} className="w-48 h-48" />
+            </div>
+
             <div className="flex items-center gap-2">
-              <Input readOnly value={typeof window !== "undefined" ? window.location.href : ""} />
+              <Input readOnly value={fullUrl} />
               <Button size="icon" variant="outline" onClick={copyLink}>
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>

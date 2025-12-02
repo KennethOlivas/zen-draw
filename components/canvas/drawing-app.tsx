@@ -208,6 +208,7 @@ export function DrawingApp({
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <TopBar
+        projectId={projectId}
         projectName={projectName}
         isOwner={isOwner}
         canEdit={canEdit}
@@ -219,43 +220,47 @@ export function DrawingApp({
 
       <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileChange} />
 
-      <CollapsibleToolbar
-        currentTool={state.tool}
-        onToolChange={setTool}
-        onUndo={undo}
-        onRedo={redo}
-        onSave={saveToFile}
-        onLoad={handleLoad}
-        onClear={clearCanvas}
-        onExportPNG={handleExportPNG}
-        onExportSVG={handleExportSVG}
-        isDark={isDark}
-        onToggleDark={toggleDark}
-        backgroundColor={state.backgroundColor}
-        onBackgroundChange={setBackgroundColor}
-      />
+      {canEdit && (
+        <>
+          <CollapsibleToolbar
+            currentTool={state.tool}
+            onToolChange={setTool}
+            onUndo={undo}
+            onRedo={redo}
+            onSave={saveToFile}
+            onLoad={handleLoad}
+            onClear={clearCanvas}
+            onExportPNG={handleExportPNG}
+            onExportSVG={handleExportSVG}
+            isDark={isDark}
+            onToggleDark={toggleDark}
+            backgroundColor={state.backgroundColor}
+            onBackgroundChange={setBackgroundColor}
+          />
 
-      <CollapsiblePropertyPanel
-        strokeColor={state.strokeColor}
-        fillColor={state.fillColor}
-        strokeWidth={state.strokeWidth}
-        opacity={state.opacity}
-        roughness={state.roughness}
-        strokeStyle={state.strokeStyle}
-        edgeStyle={state.edgeStyle}
-        fontSize={state.fontSize}
-        textAlign={state.textAlign}
-        selectedType={selectedElement?.type}
-        onStrokeColorChange={setStrokeColor}
-        onFillColorChange={setFillColor}
-        onStrokeWidthChange={setStrokeWidth}
-        onOpacityChange={setOpacity}
-        onRoughnessChange={setRoughness}
-        onStrokeStyleChange={setStrokeStyle}
-        onEdgeStyleChange={setEdgeStyle}
-        onFontSizeChange={setFontSize}
-        onTextAlignChange={setTextAlign}
-      />
+          <CollapsiblePropertyPanel
+            strokeColor={state.strokeColor}
+            fillColor={state.fillColor}
+            strokeWidth={state.strokeWidth}
+            opacity={state.opacity}
+            roughness={state.roughness}
+            strokeStyle={state.strokeStyle}
+            edgeStyle={state.edgeStyle}
+            fontSize={state.fontSize}
+            textAlign={state.textAlign}
+            selectedType={selectedElement?.type}
+            onStrokeColorChange={setStrokeColor}
+            onFillColorChange={setFillColor}
+            onStrokeWidthChange={setStrokeWidth}
+            onOpacityChange={setOpacity}
+            onRoughnessChange={setRoughness}
+            onStrokeStyleChange={setStrokeStyle}
+            onEdgeStyleChange={setEdgeStyle}
+            onFontSizeChange={setFontSize}
+            onTextAlignChange={setTextAlign}
+          />
+        </>
+      )}
 
       <ZoomControls
         zoom={state.zoom}
@@ -269,7 +274,7 @@ export function DrawingApp({
         selectedIds={state.selectedIds}
         zoom={state.zoom}
         panOffset={state.panOffset}
-        tool={state.tool}
+        tool={canEdit ? state.tool : "select"}
         strokeColor={state.strokeColor}
         fillColor={state.fillColor}
         strokeWidth={state.strokeWidth}
@@ -286,6 +291,7 @@ export function DrawingApp({
         onUpdateElement={updateElement}
         onDeleteElements={deleteElements}
         onFinishDrawing={pushHistory}
+        readOnly={!canEdit}
       />
     </div>
   )

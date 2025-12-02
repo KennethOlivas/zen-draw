@@ -114,7 +114,7 @@ export async function getProject(id: string) {
   return {
     ...project,
     isOwner,
-    canEdit: isOwner || (project.isPublic && project.publicPermission === "EDIT"),
+    canEdit: isOwner || (project.isPublic && project.publicPermission === "EDIT" && !!session),
   };
 }
 
