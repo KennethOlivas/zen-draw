@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Project } from "@prisma/client";
 import { getProjects } from "@/actions/project";
 import { ProjectCard } from "@/components/project-card";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,7 @@ export default async function ProjectsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {projects.map((project) => (
+            {projects.map((project: Project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
