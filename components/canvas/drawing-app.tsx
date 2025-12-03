@@ -6,6 +6,7 @@ import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { InfiniteCanvas } from "./infinite-canvas"
 import { CollapsibleToolbar } from "./collapsible-toolbar"
 import { CollapsiblePropertyPanel } from "./collapsible-property-panel"
+import { RightSettingsMenu } from "./right-settings-menu"
 import { ZoomControls } from "./zoom-controls"
 import { useCanvasState } from "@/hooks/use-canvas-state"
 import { exportPNG, exportSVG, generateThumbnail } from "@/lib/file-utils"
@@ -85,7 +86,7 @@ export function DrawingApp({
   const handleSave = async (name: string, asNew: boolean = false) => {
     try {
       const thumbnail = await generateThumbnail(state.elements, state.backgroundColor)
-      
+
       const projectData = {
         elements: state.elements,
         zoom: state.zoom,
@@ -223,11 +224,6 @@ export function DrawingApp({
         projectId={projectId}
         projectName={projectName}
         isOwner={isOwner}
-        canEdit={canEdit}
-        isPublic={isPublic}
-        publicPermission={publicPermission}
-        onSave={handleSave}
-        onShare={handleShare}
         onRename={handleRename}
       />
 
@@ -240,8 +236,6 @@ export function DrawingApp({
             onToolChange={setTool}
             onUndo={undo}
             onRedo={redo}
-            onSave={saveToFile}
-            onLoad={handleLoad}
             onClear={clearCanvas}
             onExportPNG={handleExportPNG}
             onExportSVG={handleExportSVG}
@@ -272,6 +266,19 @@ export function DrawingApp({
             onEdgeStyleChange={setEdgeStyle}
             onFontSizeChange={setFontSize}
             onTextAlignChange={setTextAlign}
+          />
+
+          <RightSettingsMenu
+            projectId={projectId}
+            projectName={projectName}
+            isOwner={isOwner}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            publicPermission={publicPermission}
+            onSave={handleSave}
+            onShare={handleShare}
+            onSaveFile={saveToFile}
+            onLoadFile={handleLoad}
           />
         </>
       )}

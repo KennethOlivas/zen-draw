@@ -13,8 +13,6 @@ import {
   Eraser,
   Undo2,
   Redo2,
-  Download,
-  Upload,
   Trash2,
   Moon,
   Sun,
@@ -29,15 +27,12 @@ import { Separator } from "@/components/ui/separator"
 import type { Tool } from "@/types/canvas-types"
 import { cn } from "@/lib/utils"
 import { BackgroundPicker } from "./background-picker"
-import { HelpModal } from "./help-modal"
 
 interface CollapsibleToolbarProps {
   currentTool: Tool
   onToolChange: (tool: Tool) => void
   onUndo: () => void
   onRedo: () => void
-  onSave: () => void
-  onLoad: () => void
   onClear: () => void
   onExportPNG: () => void
   onExportSVG: () => void
@@ -82,8 +77,6 @@ export function CollapsibleToolbar({
   onToolChange,
   onUndo,
   onRedo,
-  onSave,
-  onLoad,
   onClear,
   onExportPNG,
   onExportSVG,
@@ -228,39 +221,6 @@ export function CollapsibleToolbar({
 
                   <Separator orientation="vertical" className="h-6 mx-1" style={getSeparatorStyle(isExpanded, 260)} />
 
-                  {/* File operations */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-lg"
-                        onClick={onSave}
-                        style={getItemStyle(isExpanded, 280)}
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Save to file</TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-lg"
-                        onClick={onLoad}
-                        style={getItemStyle(isExpanded, 300)}
-                      >
-                        <Upload className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Load from file</TooltipContent>
-                  </Tooltip>
-
-                  <Separator orientation="vertical" className="h-6 mx-1" style={getSeparatorStyle(isExpanded, 320)} />
-
                   {/* Export */}
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -313,16 +273,6 @@ export function CollapsibleToolbar({
                     </TooltipTrigger>
                     <TooltipContent side="bottom">Clear canvas</TooltipContent>
                   </Tooltip>
-                  <div style={getItemStyle(isExpanded, 460)}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span>
-                          <HelpModal />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">Help</TooltipContent>
-                    </Tooltip>
-                  </div>
                 </>
               )}
             </div>
