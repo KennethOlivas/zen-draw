@@ -578,35 +578,27 @@ export default function LandingPage() {
 
           <div className="pt-8 border-t border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-zinc-400">
-              © 2025 Zen Draw. All rights reserved.
+              © 2025 Zen Draw. All rights reserved. Created by Kenneth Olivas.
             </div>
             <div className="flex gap-6">
-              <a
+              <Link
                 href="https://github.com/KennethOlivas/zen-draw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-zinc-400 hover:text-white transition-colors"
               >
                 <Github className="w-6 h-6" />
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-white transition-colors"
-              >
-                <Twitter className="w-6 h-6" />
-              </a>
-              <a
-                href="#"
+              </Link>
+            
+              <Link
+                href="https://www.linkedin.com/in/kenneth-olivas/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-zinc-400 hover:text-white transition-colors"
               >
                 <Linkedin className="w-6 h-6" />
-              </a>
-              <a
-                href="#"
-                className="text-zinc-400 hover:text-white transition-colors"
-              >
-                <Mail className="w-6 h-6" />
-              </a>
+              </Link>
+            
             </div>
           </div>
         </div>
