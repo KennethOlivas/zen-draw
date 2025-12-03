@@ -313,23 +313,6 @@ export function CollapsibleToolbar({
                     </TooltipTrigger>
                     <TooltipContent side="bottom">Clear canvas</TooltipContent>
                   </Tooltip>
-
-                  {/* Theme toggle */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-lg"
-                        onClick={onToggleDark}
-                        style={getItemStyle(isExpanded, 440)}
-                      >
-                        {mounted && isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Toggle theme</TooltipContent>
-                  </Tooltip>
-
                   <div style={getItemStyle(isExpanded, 460)}>
                     <Tooltip>
                       <TooltipTrigger asChild>
