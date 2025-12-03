@@ -94,6 +94,7 @@ export function CollapsibleToolbar({
 }: CollapsibleToolbarProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [itemsVisible, setItemsVisible] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   const onSetItemsVisible = useEffectEvent((visible: boolean) => {
@@ -101,6 +102,7 @@ export function CollapsibleToolbar({
   })
 
   useEffect(() => {
+    setMounted(true)
     if (isExpanded) {
       onSetItemsVisible(true)
     } else {
@@ -322,7 +324,7 @@ export function CollapsibleToolbar({
                         onClick={onToggleDark}
                         style={getItemStyle(isExpanded, 440)}
                       >
-                        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                        {mounted && isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">Toggle theme</TooltipContent>
