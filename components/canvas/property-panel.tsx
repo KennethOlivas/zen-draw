@@ -15,7 +15,6 @@ import {
   AlignRight,
   Minus,
   MoreHorizontal,
-  Square,
   Circle,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -151,27 +150,29 @@ export function PropertyPanel({
         </div>
       </div>
 
-      {/* Edge Style */}
+      {/* Edge Style - Border Radius */}
       <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Edges</Label>
-        <div className="flex gap-1">
+        <Label className="text-xs text-muted-foreground">Corners</Label>
+        <div className="grid grid-cols-2 gap-1">
           {(
             [
-              { id: "sharp", icon: <Square className="h-4 w-4" /> },
-              { id: "round", icon: <Circle className="h-4 w-4" /> },
+              { id: "none", label: "None" },
+              { id: "sm", label: "Small" },
+              { id: "md", label: "Medium" },
+              { id: "lg", label: "Large" },
             ] as const
           ).map((style) => (
             <button
               key={style.id}
               className={cn(
-                "flex-1 h-7 rounded-md border flex items-center justify-center transition-colors",
+                "h-7 rounded-md border flex items-center justify-center text-xs transition-colors",
                 edgeStyle === style.id
                   ? "bg-accent border-primary text-accent-foreground"
                   : "border-border hover:bg-accent/50"
               )}
               onClick={() => onEdgeStyleChange(style.id)}
             >
-              {style.icon}
+              {style.label}
             </button>
           ))}
         </div>

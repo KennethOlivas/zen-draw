@@ -50,8 +50,6 @@ export function CanvasElementLayer({ elements, panOffset, zoom, editingElementId
 
                 const { path, fill, fillPath } = renderElementToPath(element, elements)
                 const dashArray = getStrokeDashArray(element.strokeStyle, element.strokeWidth)
-                const lineCap = element.edgeStyle === "sharp" ? "square" : "round"
-                const lineJoin = element.edgeStyle === "sharp" ? "miter" : "round"
 
                 return (
                     <g key={element.id} opacity={element.opacity}>
@@ -61,8 +59,8 @@ export function CanvasElementLayer({ elements, panOffset, zoom, editingElementId
                             fill="none"
                             stroke={element.strokeColor}
                             strokeWidth={element.strokeWidth}
-                            strokeLinecap={lineCap}
-                            strokeLinejoin={lineJoin}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             strokeDasharray={dashArray}
                         />
                     </g>

@@ -8,7 +8,7 @@ export const DEFAULT_FONT_SIZE = 20
 export const DEFAULT_ROUGHNESS = 1
 export const DEFAULT_BACKGROUND_COLOR = "#ffffff"
 export const DEFAULT_STROKE_STYLE: StrokeStyle = "solid"
-export const DEFAULT_EDGE_STYLE: EdgeStyle = "round"
+export const DEFAULT_EDGE_STYLE: EdgeStyle = "none"
 export const DEFAULT_TEXT_ALIGN: TextAlign = "left"
 
 export const COLORS = [

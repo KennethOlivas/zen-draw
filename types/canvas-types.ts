@@ -15,7 +15,7 @@ export type ElementType = "rectangle" | "ellipse" | "diamond" | "line" | "arrow"
 export type ConnectionPoint = "top" | "right" | "bottom" | "left" | "center"
 
 export type StrokeStyle = "solid" | "dashed" | "dotted"
-export type EdgeStyle = "sharp" | "round"
+export type EdgeStyle = "none" | "sm" | "md" | "lg"
 export type TextAlign = "left" | "center" | "right"
 
 export interface Point {
@@ -78,8 +78,8 @@ export interface HistoryEntry {
 
 
 export type Data = {
-     elements: CanvasElement[];
-    zoom: number;
-    panOffset: Point;
-    backgroundColor: string;
+  elements: CanvasElement[];
+  zoom: number;
+  panOffset: Point;
+  backgroundColor: string;
 }

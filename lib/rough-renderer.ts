@@ -1,4 +1,19 @@
-import type { CanvasElement, Point, ConnectionPoint } from "@/types/canvas-types"
+import type { CanvasElement, Point, ConnectionPoint, EdgeStyle } from "@/types/canvas-types"
+
+// Helper to get border radius value from EdgeStyle
+function getBorderRadius(edgeStyle: EdgeStyle | undefined): number {
+  switch (edgeStyle) {
+    case "sm":
+      return 4
+    case "md":
+      return 8
+    case "lg":
+      return 16
+    case "none":
+    default:
+      return 0
+  }
+}
 
 // Simple seeded random number generator for consistent roughness
 function seededRandom(seed: number): () => number {
@@ -46,20 +61,60 @@ function generateRoughRect(
   height: number,
   roughness: number,
   rand: () => number,
+  borderRadius = 0,
 ): string {
+  // If no border radius, use sharp corners
+  if (borderRadius === 0) {
+    const paths = [
+      generateRoughLine(x, y, x + width, y, roughness, rand),
+      generateRoughLine(x + width, y, x + width, y + height, roughness, rand),
+      generateRoughLine(x + width, y + height, x, y + height, roughness, rand),
+      generateRoughLine(x, y + height, x, y, roughness, rand),
+    ]
+
+    if (roughness > 0) {
+      paths.push(
+        generateRoughLine(x, y, x + width, y, roughness * 0.5, rand),
+        generateRoughLine(x + width, y, x + width, y + height, roughness * 0.5, rand),
+        generateRoughLine(x + width, y + height, x, y + height, roughness * 0.5, rand),
+        generateRoughLine(x, y + height, x, y, roughness * 0.5, rand),
+      )
+    }
+
+    return paths.join(" ")
+  }
+
+  // Clamp border radius to half the smaller dimension
+  const maxRadius = Math.min(Math.abs(width), Math.abs(height)) / 2
+  const r = Math.min(borderRadius, maxRadius)
+
+  // Generate rounded rectangle with rough lines and smooth arcs for corners
   const paths = [
-    generateRoughLine(x, y, x + width, y, roughness, rand),
-    generateRoughLine(x + width, y, x + width, y + height, roughness, rand),
-    generateRoughLine(x + width, y + height, x, y + height, roughness, rand),
-    generateRoughLine(x, y + height, x, y, roughness, rand),
+    // Top edge
+    generateRoughLine(x + r, y, x + width - r, y, roughness, rand),
+    // Top-right corner arc
+    `M ${x + width - r} ${y} Q ${x + width} ${y} ${x + width} ${y + r}`,
+    // Right edge
+    generateRoughLine(x + width, y + r, x + width, y + height - r, roughness, rand),
+    // Bottom-right corner arc
+    `M ${x + width} ${y + height - r} Q ${x + width} ${y + height} ${x + width - r} ${y + height}`,
+    // Bottom edge
+    generateRoughLine(x + width - r, y + height, x + r, y + height, roughness, rand),
+    // Bottom-left corner arc
+    `M ${x + r} ${y + height} Q ${x} ${y + height} ${x} ${y + height - r}`,
+    // Left edge
+    generateRoughLine(x, y + height - r, x, y + r, roughness, rand),
+    // Top-left corner arc
+    `M ${x} ${y + r} Q ${x} ${y} ${x + r} ${y}`,
   ]
 
   if (roughness > 0) {
+    // Add second pass for rougher appearance (only on straight edges)
     paths.push(
-      generateRoughLine(x, y, x + width, y, roughness * 0.5, rand),
-      generateRoughLine(x + width, y, x + width, y + height, roughness * 0.5, rand),
-      generateRoughLine(x + width, y + height, x, y + height, roughness * 0.5, rand),
-      generateRoughLine(x, y + height, x, y, roughness * 0.5, rand),
+      generateRoughLine(x + r, y, x + width - r, y, roughness * 0.5, rand),
+      generateRoughLine(x + width, y + r, x + width, y + height - r, roughness * 0.5, rand),
+      generateRoughLine(x + width - r, y + height, x + r, y + height, roughness * 0.5, rand),
+      generateRoughLine(x, y + height - r, x, y + r, roughness * 0.5, rand),
     )
   }
 
@@ -214,8 +269,27 @@ function generateRoughDiamond(
 }
 
 // Generate simple rectangle path for filling
-function generateRectPath(x: number, y: number, width: number, height: number): string {
-  return `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height} L ${x} ${y + height} Z`
+function generateRectPath(x: number, y: number, width: number, height: number, borderRadius = 0): string {
+  if (borderRadius === 0) {
+    return `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height} L ${x} ${y + height} Z`
+  }
+
+  // Clamp border radius
+  const maxRadius = Math.min(Math.abs(width), Math.abs(height)) / 2
+  const r = Math.min(borderRadius, maxRadius)
+
+  return [
+    `M ${x + r} ${y}`,
+    `L ${x + width - r} ${y}`,
+    `Q ${x + width} ${y} ${x + width} ${y + r}`,
+    `L ${x + width} ${y + height - r}`,
+    `Q ${x + width} ${y + height} ${x + width - r} ${y + height}`,
+    `L ${x + r} ${y + height}`,
+    `Q ${x} ${y + height} ${x} ${y + height - r}`,
+    `L ${x} ${y + r}`,
+    `Q ${x} ${y} ${x + r} ${y}`,
+    `Z`,
+  ].join(" ")
 }
 
 // Generate simple diamond path for filling
@@ -234,12 +308,14 @@ export function renderElementToPath(
   const { x, y, width, height, roughness } = element
 
   switch (element.type) {
-    case "rectangle":
+    case "rectangle": {
+      const radius = getBorderRadius(element.edgeStyle)
       return {
-        path: generateRoughRect(x, y, width, height, roughness, rand),
-        fillPath: generateRectPath(x, y, width, height),
+        path: generateRoughRect(x, y, width, height, roughness, rand, radius),
+        fillPath: generateRectPath(x, y, width, height, radius),
         fill: element.fillColor,
       }
+    }
 
     case "diamond":
       return {

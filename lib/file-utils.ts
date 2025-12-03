@@ -63,8 +63,8 @@ export async function generateThumbnail(elements: CanvasElement[], backgroundCol
                 strokePath.setAttribute("fill", "none")
                 strokePath.setAttribute("stroke", element.strokeColor)
                 strokePath.setAttribute("stroke-width", String(element.strokeWidth))
-                strokePath.setAttribute("stroke-linecap", element.edgeStyle === "sharp" ? "square" : "round")
-                strokePath.setAttribute("stroke-linejoin", element.edgeStyle === "sharp" ? "miter" : "round")
+                strokePath.setAttribute("stroke-linecap", "round")
+                strokePath.setAttribute("stroke-linejoin", "round")
                 if (element.strokeStyle === "dashed") {
                     strokePath.setAttribute("stroke-dasharray", `${element.strokeWidth * 4} ${element.strokeWidth * 2}`)
                 } else if (element.strokeStyle === "dotted") {
@@ -91,7 +91,7 @@ export async function generateThumbnail(elements: CanvasElement[], backgroundCol
             const scale = Math.min(maxDim / width, maxDim / height)
             canvas.width = width * scale
             canvas.height = height * scale
-            
+
             const ctx = canvas.getContext("2d")!
             ctx.scale(scale, scale)
             ctx.drawImage(img, 0, 0)
@@ -169,8 +169,8 @@ export function exportPNG(elements: CanvasElement[], backgroundColor: string) {
             strokePath.setAttribute("fill", "none")
             strokePath.setAttribute("stroke", element.strokeColor)
             strokePath.setAttribute("stroke-width", String(element.strokeWidth))
-            strokePath.setAttribute("stroke-linecap", element.edgeStyle === "sharp" ? "square" : "round")
-            strokePath.setAttribute("stroke-linejoin", element.edgeStyle === "sharp" ? "miter" : "round")
+            strokePath.setAttribute("stroke-linecap", "round")
+            strokePath.setAttribute("stroke-linejoin", "round")
             if (element.strokeStyle === "dashed") {
                 strokePath.setAttribute("stroke-dasharray", `${element.strokeWidth * 4} ${element.strokeWidth * 2}`)
             } else if (element.strokeStyle === "dotted") {
@@ -248,8 +248,8 @@ export function exportSVG(elements: CanvasElement[], backgroundColor: string) {
             if (fill !== "transparent" && fill !== "none") {
                 svgContent += `    <path d="${fillPath || path}" fill="${fill}" stroke="none"/>\n`
             }
-            const lineCap = element.edgeStyle === "sharp" ? "square" : "round"
-            const lineJoin = element.edgeStyle === "sharp" ? "miter" : "round"
+            const lineCap = "round"
+            const lineJoin = "round"
             let dashArray = ""
             if (element.strokeStyle === "dashed")
                 dashArray = ` strokeDasharray="${element.strokeWidth * 4} ${element.strokeWidth * 2}"`
