@@ -134,7 +134,7 @@ export function RightSettingsMenu({
         <TooltipProvider delayDuration={300}>
             <div
                 className={cn(
-                    "fixed right-4 top-20 bottom-24 md:bottom-4 z-40 flex flex-col pointer-events-none select-none",
+                    "fixed right-4 top-4 bottom-24 md:bottom-4 z-40 flex flex-col pointer-events-none select-none",
                     isExpanded ? "w-52" : "w-auto"
                 )}
                 style={{
