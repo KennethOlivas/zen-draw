@@ -109,7 +109,7 @@ export function CollapsibleToolbar({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed bottom-6 md:top-4 md:bottom-auto left-1/2 -translate-x-1/2 z-50">
         <div
           className={cn(
             "bg-toolbar-bg border border-toolbar-border rounded-xl shadow-lg overflow-hidden",
@@ -149,7 +149,7 @@ export function CollapsibleToolbar({
               ref={contentRef}
               className={cn(
                 "flex items-center gap-1 overflow-hidden",
-                isExpanded ? "max-w-[1000px] opacity-100" : "max-w-0 opacity-0",
+                isExpanded ? "max-w-[85vw] md:max-w-[1000px] opacity-100 overflow-x-auto no-scrollbar" : "max-w-0 opacity-0",
               )}
               style={{
                 transitionProperty: "max-width, opacity",

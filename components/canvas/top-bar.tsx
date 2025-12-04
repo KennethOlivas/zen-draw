@@ -35,7 +35,7 @@ export function TopBar({
   };
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-50 flex justify-between items-center pointer-events-none">
+    <div className="absolute top-4 left-4 right-16 md:right-4 z-50 flex justify-between items-center pointer-events-none">
       <div className="pointer-events-auto flex items-center bg-toolbar-bg backdrop-blur-sm p-2 rounded-xl border shadow-sm">
         <Link href="/projects">
           <Button variant="ghost" size="icon" className="h-8 w-8">

@@ -135,7 +135,7 @@ export function CollapsiblePropertyPanel({
     <TooltipProvider delayDuration={300}>
       <div
         className={cn(
-          "fixed left-4 top-1/2 -translate-y-1/2 z-50",
+          "fixed left-4 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 z-50",
           isExpanded ? "w-52" : "w-auto"
         )}
         style={{
