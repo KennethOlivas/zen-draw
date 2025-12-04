@@ -41,7 +41,7 @@ interface InfiniteCanvasProps {
   readOnly?: boolean
 }
 
-type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | null
+type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "start" | "end" | null
 
 export function InfiniteCanvas({
   elements,
@@ -350,19 +350,51 @@ export function InfiniteCanvas({
       let newWidth = element.width
       let newHeight = element.height
 
-      if (resizeHandle.includes("w")) {
-        newX = resizeStartBounds.x + dx
-        newWidth = resizeStartBounds.width - dx
-      }
-      if (resizeHandle.includes("e")) {
-        newWidth = resizeStartBounds.width + dx
-      }
-      if (resizeHandle.includes("n")) {
-        newY = resizeStartBounds.y + dy
-        newHeight = resizeStartBounds.height - dy
-      }
-      if (resizeHandle.includes("s")) {
-        newHeight = resizeStartBounds.height + dy
+      if (resizeHandle === "start") {
+        const snapPoint = findNearestSnapPoint(point, currentElementId || selectedIds[0])
+        if (snapPoint) {
+          setHoveredConnection(snapPoint)
+          newX = snapPoint.position.x
+          newY = snapPoint.position.y
+        } else {
+          setHoveredConnection(null)
+          newX = point.x - dragOffset.x
+          newY = point.y - dragOffset.y
+        }
+
+        const endX = element.x + element.width
+        const endY = element.y + element.height
+
+        newWidth = endX - newX
+        newHeight = endY - newY
+      } else if (resizeHandle === "end") {
+        const snapPoint = findNearestSnapPoint(point, currentElementId || selectedIds[0])
+        if (snapPoint) {
+          setHoveredConnection(snapPoint)
+          const endX = snapPoint.position.x
+          const endY = snapPoint.position.y
+          newWidth = endX - element.x
+          newHeight = endY - element.y
+        } else {
+          setHoveredConnection(null)
+          newWidth = point.x - dragOffset.x - element.x
+          newHeight = point.y - dragOffset.y - element.y
+        }
+      } else {
+        if (resizeHandle.includes("w")) {
+          newX = resizeStartBounds.x + dx
+          newWidth = resizeStartBounds.width - dx
+        }
+        if (resizeHandle.includes("e")) {
+          newWidth = resizeStartBounds.width + dx
+        }
+        if (resizeHandle.includes("n")) {
+          newY = resizeStartBounds.y + dy
+          newHeight = resizeStartBounds.height - dy
+        }
+        if (resizeHandle.includes("s")) {
+          newHeight = resizeStartBounds.height + dy
+        }
       }
 
       onUpdateElement(selectedIds[0], { x: newX, y: newY, width: newWidth, height: newHeight })
@@ -423,36 +455,57 @@ export function InfiniteCanvas({
   }
 
   const handlePointerUp = () => {
-    if (currentElementId && (tool === "arrow" || tool === "line")) {
-      const element = elements.find((el) => el.id === currentElementId)
+    if ((currentElementId && (tool === "arrow" || tool === "line")) || (resizeHandle && (resizeHandle === "start" || resizeHandle === "end"))) {
+      const id = currentElementId || selectedIds[0]
+      const element = elements.find((el) => el.id === id)
 
       if (element) {
         const updates: Partial<CanvasElement> = {}
 
         if (hoveredConnection) {
-          updates.endBinding = { elementId: hoveredConnection.elementId, point: hoveredConnection.point }
-          updates.width = hoveredConnection.position.x - element.x
-          updates.height = hoveredConnection.position.y - element.y
+          if (resizeHandle === "start") {
+            updates.startBinding = { elementId: hoveredConnection.elementId, point: hoveredConnection.point }
+            updates.x = hoveredConnection.position.x
+            updates.y = hoveredConnection.position.y
+            updates.width = (element.x + element.width) - hoveredConnection.position.x
+            updates.height = (element.y + element.height) - hoveredConnection.position.y
+          } else {
+            updates.endBinding = { elementId: hoveredConnection.elementId, point: hoveredConnection.point }
+            updates.width = hoveredConnection.position.x - element.x
+            updates.height = hoveredConnection.position.y - element.y
+          }
+        } else {
+          // Clear binding if not hovering a connection
+          if (resizeHandle === "start") {
+            updates.startBinding = undefined
+          } else if (resizeHandle === "end") {
+            updates.endBinding = undefined
+          }
         }
 
-        const startX = element.x
-        const startY = element.y
-        const endX = element.x + (updates.width ?? element.width)
-        const endY = element.y + (updates.height ?? element.height)
+        const startX = updates.x ?? element.x
+        const startY = updates.y ?? element.y
+        const endX = startX + (updates.width ?? element.width)
+        const endY = startY + (updates.height ?? element.height)
 
-        const excludeIds = [currentElementId]
-        if (element.startBinding) excludeIds.push(element.startBinding.elementId)
-        if (updates.endBinding) excludeIds.push(updates.endBinding.elementId)
+        const excludeIds = [id]
+        const startBinding = updates.startBinding ?? element.startBinding
+        const endBinding = updates.endBinding ?? element.endBinding
+
+        if (startBinding) excludeIds.push(startBinding.elementId)
+        if (endBinding) excludeIds.push(endBinding.elementId)
         if (hoveredConnection) excludeIds.push(hoveredConnection.elementId)
 
         const controlPoint = calculateControlPoint(startX, startY, endX, endY, elements, excludeIds)
 
         if (controlPoint) {
           updates.controlPoint = controlPoint
+        } else {
+          updates.controlPoint = undefined
         }
 
         if (Object.keys(updates).length > 0) {
-          onUpdateElement(currentElementId, updates)
+          onUpdateElement(id, updates)
         }
       }
     }

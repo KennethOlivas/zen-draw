@@ -519,6 +519,13 @@ export function findNearestConnectionPoint(
 }
 
 export function getResizeHandles(element: CanvasElement): { position: string; x: number; y: number; cursor: string }[] {
+  if (element.type === "line" || element.type === "arrow") {
+    return [
+      { position: "start", x: element.x, y: element.y, cursor: "move" },
+      { position: "end", x: element.x + element.width, y: element.y + element.height, cursor: "move" },
+    ]
+  }
+
   const bounds = getElementBounds(element)
 
   return [
