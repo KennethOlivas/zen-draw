@@ -134,7 +134,7 @@ export function RightSettingsMenu({
         <TooltipProvider delayDuration={300}>
             <div
                 className={cn(
-                    "fixed right-4 top-4 z-50",
+                    "fixed right-4 top-20 bottom-24 md:bottom-4 z-40 flex flex-col pointer-events-none select-none",
                     isExpanded ? "w-52" : "w-auto"
                 )}
                 style={{
@@ -143,7 +143,7 @@ export function RightSettingsMenu({
                     transitionTimingFunction: "ease-out",
                 }}
             >
-                <div className="bg-toolbar-bg border border-toolbar-border rounded-xl shadow-lg overflow-hidden">
+                <div className="bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden pointer-events-auto">
                     {/* Panel content */}
                     <div
                         className={cn(

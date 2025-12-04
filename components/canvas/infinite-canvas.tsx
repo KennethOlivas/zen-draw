@@ -220,6 +220,7 @@ export function InfiniteCanvas({
     const point = screenToCanvas(e.clientX, e.clientY)
     setDragStart(point)
     setIsDragging(true)
+      ; (e.target as Element).setPointerCapture(e.pointerId)
 
     if (tool === "pan") {
       return
@@ -454,7 +455,8 @@ export function InfiniteCanvas({
     }
   }
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent) => {
+    ; (e.target as Element).releasePointerCapture(e.pointerId)
     if ((currentElementId && (tool === "arrow" || tool === "line")) || (resizeHandle && (resizeHandle === "start" || resizeHandle === "end"))) {
       const id = currentElementId || selectedIds[0]
       const element = elements.find((el) => el.id === id)

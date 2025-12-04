@@ -219,7 +219,7 @@ export function DrawingApp({
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden touch-none bg-background overscroll-none">
+    <div className="fixed inset-0 overflow-hidden touch-none bg-background overscroll-none font-['Virgil']">
       <TopBar
         projectId={projectId}
         projectName={projectName}

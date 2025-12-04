@@ -103,24 +103,13 @@ export function CollapsibleToolbar({
       return () => clearTimeout(timer)
     }
   }, [isExpanded])
-
   const currentToolData = tools.find((t) => t.id === currentTool)
   const CurrentIcon = currentToolData?.icon || MousePointer2
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="fixed bottom-6 md:top-4 md:bottom-auto left-1/2 -translate-x-1/2 z-50">
-        <div
-          className={cn(
-            "bg-toolbar-bg border border-toolbar-border rounded-xl shadow-lg overflow-hidden",
-            isExpanded ? "p-1.5" : "p-1",
-          )}
-          style={{
-            transitionProperty: "padding",
-            transitionDuration: "300ms",
-            transitionTimingFunction: "ease-out",
-          }}
-        >
+      <div className="fixed bottom-6 md:top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
+        <div className="bg-card p-2 rounded-xl border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 pointer-events-auto">
           <div className={cn("flex items-center ", isExpanded ? "gap-1" : "gap-0")}>
             {/* Collapse/Expand button */}
             <Tooltip>

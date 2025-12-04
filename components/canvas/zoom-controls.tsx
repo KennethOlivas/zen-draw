@@ -14,7 +14,7 @@ interface ZoomControlsProps {
 export function ZoomControls({ zoom, onZoomIn, onZoomOut, onZoomReset }: ZoomControlsProps) {
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="fixed bottom-24 md:bottom-4 right-4 z-50 flex items-center gap-1 bg-toolbar-bg border border-toolbar-border rounded-xl p-1 shadow-lg">
+      <div className="fixed bottom-24 md:bottom-4 right-4 z-50 flex items-center gap-1 bg-card border-2 border-foreground rounded-xl p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] pointer-events-auto select-none">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

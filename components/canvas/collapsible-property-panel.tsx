@@ -135,7 +135,7 @@ export function CollapsiblePropertyPanel({
     <TooltipProvider delayDuration={300}>
       <div
         className={cn(
-          "fixed left-4 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 z-50",
+          "fixed left-4 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 z-50 pointer-events-none select-none",
           isExpanded ? "w-52" : "w-auto"
         )}
         style={{
@@ -144,7 +144,7 @@ export function CollapsiblePropertyPanel({
           transitionTimingFunction: "ease-out",
         }}
       >
-        <div className="bg-toolbar-bg border border-toolbar-border rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden pointer-events-auto">
 
           {/* Panel content */}
           <div
