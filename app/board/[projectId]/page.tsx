@@ -9,6 +9,7 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+
   const { projectId } = await params;
   const project = await getProject(projectId);
 
