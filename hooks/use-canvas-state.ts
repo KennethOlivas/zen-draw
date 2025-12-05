@@ -10,6 +10,7 @@ import type {
   StrokeStyle,
   EdgeStyle,
   TextAlign,
+  GridMode,
 } from "@/types/canvas-types"
 import {
   DEFAULT_STROKE_COLOR,
@@ -27,7 +28,7 @@ import {
 const MAX_HISTORY = 50
 const AUTO_SAVE_KEY = "zen-draw-autosave"
 
-function generateId(): string {
+export function generateId(): string {
   return Math.random().toString(36).substring(2, 15)
 }
 
@@ -52,6 +53,8 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
     strokeStyle: initialData?.strokeStyle || DEFAULT_STROKE_STYLE,
     edgeStyle: initialData?.edgeStyle || DEFAULT_EDGE_STYLE,
     textAlign: initialData?.textAlign || DEFAULT_TEXT_ALIGN,
+    gridMode: initialData?.gridMode || "none",
+    snapToGrid: initialData?.snapToGrid ?? true,
   })
 
   const historyRef = useRef<HistoryEntry[]>([])
@@ -60,12 +63,12 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
 
   const onSetState = useEffectEvent((newState: CanvasState) => {
     setState((prev) => ({
-          ...prev,
-          elements: newState.elements || [],
-          zoom: newState.zoom || 1,
-          panOffset: newState.panOffset || { x: 0, y: 0 },
-          backgroundColor: newState.backgroundColor || DEFAULT_BACKGROUND_COLOR,
-        }))
+      ...prev,
+      elements: newState.elements || [],
+      zoom: newState.zoom || 1,
+      panOffset: newState.panOffset || { x: 0, y: 0 },
+      backgroundColor: newState.backgroundColor || DEFAULT_BACKGROUND_COLOR,
+    }))
   })
 
   // Auto-save to localStorage
@@ -75,8 +78,6 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
       return
     }
 
-    // Only load from auto-save if we are NOT in a project (scratchpad mode)
-    // and no initial data was provided (though initialData is usually undefined for scratchpad)
     if (!projectId && !initialData) {
       const saved = localStorage.getItem(AUTO_SAVE_KEY)
       if (saved) {
@@ -91,7 +92,6 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
   }, [projectId, initialData, forceNew])
 
   useEffect(() => {
-    // Only auto-save to the generic key if we are in scratchpad mode
     if (!projectId) {
       const timeoutId = setTimeout(() => {
         localStorage.setItem(
@@ -401,6 +401,14 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
     })
   }, [])
 
+  const setGridMode = useCallback((gridMode: GridMode) => {
+    setState((prev) => ({ ...prev, gridMode }))
+  }, [])
+
+  const setSnapToGrid = useCallback((snapToGrid: boolean) => {
+    setState((prev) => ({ ...prev, snapToGrid }))
+  }, [])
+
   // Save/Load
   const saveToFile = useCallback(() => {
     const data = JSON.stringify(
@@ -473,6 +481,8 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
     setEdgeStyle,
     setFontSize,
     setTextAlign,
+    setGridMode,
+    setSnapToGrid,
     sendToBack,
     sendBackward,
     bringForward,

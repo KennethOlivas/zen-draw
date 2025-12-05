@@ -79,6 +79,8 @@ export function DrawingApp({
     undo,
     redo,
     pushHistory,
+    setGridMode,
+    setSnapToGrid,
   } = useCanvasState(initialData, projectId, forceNew)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -242,6 +244,10 @@ export function DrawingApp({
             onToggleDark={toggleDark}
             backgroundColor={state.backgroundColor}
             onBackgroundChange={handleBackgroundChange}
+            gridMode={state.gridMode}
+            onGridModeChange={setGridMode}
+            snapToGrid={state.snapToGrid}
+            onSnapToGridChange={setSnapToGrid}
           />
 
           <CollapsiblePropertyPanel
@@ -316,6 +322,8 @@ export function DrawingApp({
         onDeleteElements={deleteElements}
         onFinishDrawing={pushHistory}
         readOnly={!canEdit}
+        gridMode={state.gridMode}
+        snapToGrid={state.snapToGrid}
       />
     </div>
   )

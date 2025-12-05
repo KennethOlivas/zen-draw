@@ -53,6 +53,8 @@ export interface CanvasElement {
   textAlign?: TextAlign
 }
 
+export type GridMode = "none" | "dots" | "grid" | "mesh"
+
 export interface CanvasState {
   elements: CanvasElement[]
   selectedIds: string[]
@@ -69,6 +71,8 @@ export interface CanvasState {
   strokeStyle: StrokeStyle
   edgeStyle: EdgeStyle
   textAlign: TextAlign
+  gridMode: GridMode
+  snapToGrid: boolean
 }
 
 export interface HistoryEntry {

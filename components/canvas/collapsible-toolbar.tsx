@@ -20,11 +20,25 @@ import {
   FileDown,
   Diamond,
   ChevronUp,
+  Grid3X3,
+  Grip,
+  Maximize,
+  LayoutGrid,
+  Magnet,
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Separator } from "@/components/ui/separator"
-import type { Tool } from "@/types/canvas-types"
+import type { Tool, GridMode } from "@/types/canvas-types"
 import { cn } from "@/lib/utils"
 import { BackgroundPicker } from "./background-picker"
 
@@ -40,6 +54,10 @@ interface CollapsibleToolbarProps {
   onToggleDark: () => void
   backgroundColor: string
   onBackgroundChange: (color: string) => void
+  gridMode: GridMode
+  onGridModeChange: (mode: GridMode) => void
+  snapToGrid: boolean
+  onSnapToGridChange: (snap: boolean) => void
 }
 
 const tools: { id: Tool; icon: typeof MousePointer2; label: string; shortcut?: string }[] = [
@@ -84,10 +102,13 @@ export function CollapsibleToolbar({
   onToggleDark,
   backgroundColor,
   onBackgroundChange,
+  gridMode,
+  onGridModeChange,
+  snapToGrid,
+  onSnapToGridChange,
 }: CollapsibleToolbarProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [itemsVisible, setItemsVisible] = useState(true)
-  const [mounted, setMounted] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   const onSetItemsVisible = useEffectEvent((visible: boolean) => {
@@ -95,7 +116,6 @@ export function CollapsibleToolbar({
   })
 
   useEffect(() => {
-    setMounted(true)
     if (isExpanded) {
       onSetItemsVisible(true)
     } else {
@@ -243,11 +263,88 @@ export function CollapsibleToolbar({
 
                   <Separator orientation="vertical" className="h-6 mx-1" style={getSeparatorStyle(isExpanded, 380)} />
 
+                  {/* Grid Controls */}
+                  <DropdownMenu>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                              "h-9 w-9 rounded-lg",
+                              gridMode !== "none" && "bg-accent text-accent-foreground",
+                            )}
+                            style={getItemStyle(isExpanded, 380)}
+                          >
+                            <Grid3X3 className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">Grid Layout</TooltipContent>
+                    </Tooltip>
+                    <DropdownMenuContent side="top" className="min-w-[150px]">
+                      <DropdownMenuCheckboxItem
+                        checked={snapToGrid}
+                        onCheckedChange={onSnapToGridChange}
+                      >
+                        <Magnet className="h-4 w-4 mr-2" />
+                        Snap onto Grid
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={gridMode}
+                        onValueChange={(value) => {
+                          const mode = value as GridMode
+                          onGridModeChange(mode)
+                          if (mode === "none") {
+                            onSnapToGridChange(false)
+                          }
+                        }}
+                      >
+                        <DropdownMenuRadioItem value="none">
+                          <Maximize className="h-4 w-4 mr-2" />
+                          None
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="dots">
+                          <Grip className="h-4 w-4 mr-2" />
+                          Dots
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="grid">
+                          <Grid3X3 className="h-4 w-4 mr-2" />
+                          Grid
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="mesh">
+                          <LayoutGrid className="h-4 w-4 mr-2" />
+                          Mesh
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Separator orientation="vertical" className="h-6 mx-1" style={getSeparatorStyle(isExpanded, 380)} />
+
+                  {/* Dark Mode Toggle */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-lg"
+                        onClick={onToggleDark}
+                        style={getItemStyle(isExpanded, 390)}
+                      >
+                        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Toggle Theme</TooltipContent>
+                  </Tooltip>
+
                   <div style={getItemStyle(isExpanded, 400)}>
                     <BackgroundPicker backgroundColor={backgroundColor} onBackgroundChange={onBackgroundChange} />
                   </div>
 
-                  {/* Clear */}
+                  {/* Clear Canvas */}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -260,7 +357,7 @@ export function CollapsibleToolbar({
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Clear canvas</TooltipContent>
+                    <TooltipContent side="bottom">Clear Canvas</TooltipContent>
                   </Tooltip>
                 </>
               )}

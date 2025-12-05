@@ -39,6 +39,8 @@ interface InfiniteCanvasProps {
   onDeleteElements: (ids: string[]) => void
   onFinishDrawing: () => void
   readOnly?: boolean
+  gridMode?: "none" | "dots" | "grid" | "mesh"
+  snapToGrid?: boolean
 }
 
 type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "start" | "end" | null
@@ -66,6 +68,8 @@ export function InfiniteCanvas({
   onDeleteElements,
   onFinishDrawing,
   readOnly = false,
+  gridMode = "none",
+  snapToGrid: snapEnabled = true,
 }: InfiniteCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -100,6 +104,20 @@ export function InfiniteCanvas({
     point: ConnectionPoint
     position: Point
   } | null>(null)
+
+  const snapToGrid = (value: number) => {
+    if (!snapEnabled) return value
+    const gridSize = gridMode === "mesh" ? 5 : 20
+    return Math.round(value / gridSize) * gridSize
+  }
+
+  const snapPoint = (point: Point): Point => {
+    if (!snapEnabled) return point
+    return {
+      x: snapToGrid(point.x),
+      y: snapToGrid(point.y),
+    }
+  }
 
   // Convert screen coordinates to canvas coordinates
   const screenToCanvas = (screenX: number, screenY: number): Point => {
@@ -217,18 +235,26 @@ export function InfiniteCanvas({
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return
 
-    const point = screenToCanvas(e.clientX, e.clientY)
+    let point = screenToCanvas(e.clientX, e.clientY)
+    const rawPoint = point
+
+    // Apply snapping for tools that create new elements (except freehand)
+    if (["rectangle", "ellipse", "diamond", "line", "arrow", "text"].includes(tool)) {
+      point = snapPoint(point)
+    }
+
     setDragStart(point)
     setIsDragging(true)
       ; (e.target as Element).setPointerCapture(e.pointerId)
 
     if (tool === "pan") {
+      setDragStart(rawPoint) // Don't snap for panning
       return
     }
 
     if (readOnly) {
       if (tool === "select") {
-        const element = getElementAtPoint(point)
+        const element = getElementAtPoint(rawPoint)
         if (element) {
           if (!selectedIds.includes(element.id)) {
             onSelectionChange([element.id])
@@ -241,34 +267,37 @@ export function InfiniteCanvas({
     }
 
     if (tool === "select") {
-      const handle = getResizeHandleAtPoint(point)
+      const handle = getResizeHandleAtPoint(rawPoint)
       if (handle && selectedIds.length === 1) {
         setResizeHandle(handle)
         const element = elements.find((el) => el.id === selectedIds[0])
         if (element) {
           setResizeStartBounds(getElementBounds(element))
         }
+        setDragStart(rawPoint)
         return
       }
 
-      const element = getElementAtPoint(point)
+      const element = getElementAtPoint(rawPoint)
       if (element) {
         if (!selectedIds.includes(element.id)) {
           onSelectionChange([element.id])
         }
         setIsMoving(true)
         setDragOffset({
-          x: point.x - element.x,
-          y: point.y - element.y,
+          x: rawPoint.x - element.x,
+          y: rawPoint.y - element.y,
         })
+        setDragStart(rawPoint)
       } else {
         onSelectionChange([])
+        setDragStart(rawPoint)
       }
       return
     }
 
     if (tool === "eraser") {
-      const element = getElementAtPoint(point)
+      const element = getElementAtPoint(rawPoint)
       if (element) {
         onDeleteElements([element.id])
       }
@@ -286,9 +315,9 @@ export function InfiniteCanvas({
       let actualStartX = point.x
       let actualStartY = point.y
 
-      // For arrow/line, check for snap point at start
+      // For arrow/line, check for snap point at start - this takes precedence over grid snapping
       if (tool === "arrow" || tool === "line") {
-        const snapPoint = findNearestSnapPoint(point)
+        const snapPoint = findNearestSnapPoint(rawPoint)
         if (snapPoint) {
           startBinding = { elementId: snapPoint.elementId, point: snapPoint.point }
           actualStartX = snapPoint.position.x
@@ -322,29 +351,22 @@ export function InfiniteCanvas({
 
   // Handle pointer move
   const handlePointerMove = (e: React.PointerEvent) => {
-    const point = screenToCanvas(e.clientX, e.clientY)
+    let point = screenToCanvas(e.clientX, e.clientY)
+    const rawPoint = point
 
-    if ((tool === "arrow" || tool === "line") && isDragging && currentElementId) {
-      const snapPoint = findNearestSnapPoint(point, currentElementId)
-      setHoveredConnection(snapPoint)
+    // Snap for certain operations
+    if (snapEnabled && !["freehand", "pan", "eraser"].includes(tool)) {
+      point = snapPoint(point)
     }
 
-    if (!isDragging || !dragStart) return
-
-    if (tool === "pan") {
-      onPanChange({
-        x: panOffset.x + (e.clientX - containerRef.current!.getBoundingClientRect().left - panOffset.x - dragStart.x * zoom),
-        y: panOffset.y + (e.clientY - containerRef.current!.getBoundingClientRect().top - panOffset.y - dragStart.y * zoom),
-      })
-      return
+    if ((tool === "arrow" || tool === "line") && isDragging && currentElementId) {
+      const snapPoint = findNearestSnapPoint(rawPoint, currentElementId)
+      setHoveredConnection(snapPoint)
     }
 
     if (resizeHandle && selectedIds.length === 1 && resizeStartBounds) {
       const element = elements.find((el) => el.id === selectedIds[0])
       if (!element) return
-
-      const dx = point.x - dragStart.x
-      const dy = point.y - dragStart.y
 
       let newX = element.x
       let newY = element.y
@@ -352,24 +374,23 @@ export function InfiniteCanvas({
       let newHeight = element.height
 
       if (resizeHandle === "start") {
-        const snapPoint = findNearestSnapPoint(point, currentElementId || selectedIds[0])
+        const snapPoint = findNearestSnapPoint(rawPoint, currentElementId || selectedIds[0])
         if (snapPoint) {
           setHoveredConnection(snapPoint)
           newX = snapPoint.position.x
           newY = snapPoint.position.y
         } else {
           setHoveredConnection(null)
-          newX = point.x - dragOffset.x
-          newY = point.y - dragOffset.y
+          newX = point.x
+          newY = point.y
         }
 
         const endX = element.x + element.width
         const endY = element.y + element.height
-
         newWidth = endX - newX
         newHeight = endY - newY
       } else if (resizeHandle === "end") {
-        const snapPoint = findNearestSnapPoint(point, currentElementId || selectedIds[0])
+        const snapPoint = findNearestSnapPoint(rawPoint, currentElementId || selectedIds[0])
         if (snapPoint) {
           setHoveredConnection(snapPoint)
           const endX = snapPoint.position.x
@@ -378,47 +399,62 @@ export function InfiniteCanvas({
           newHeight = endY - element.y
         } else {
           setHoveredConnection(null)
-          newWidth = point.x - dragOffset.x - element.x
-          newHeight = point.y - dragOffset.y - element.y
+          newWidth = point.x - element.x
+          newHeight = point.y - element.y
         }
       } else {
-        if (resizeHandle.includes("w")) {
-          newX = resizeStartBounds.x + dx
-          newWidth = resizeStartBounds.width - dx
+        // Standard bounding box resizing
+        const bounds = resizeStartBounds || { x: element.x, y: element.y, width: element.width, height: element.height }
+        const right = bounds.x + bounds.width
+        const bottom = bounds.y + bounds.height
+
+        if (resizeHandle?.includes("w")) {
+          newX = point.x
+          newWidth = right - newX
         }
-        if (resizeHandle.includes("e")) {
-          newWidth = resizeStartBounds.width + dx
+        if (resizeHandle?.includes("n")) {
+          newY = point.y
+          newHeight = bottom - newY
         }
-        if (resizeHandle.includes("n")) {
-          newY = resizeStartBounds.y + dy
-          newHeight = resizeStartBounds.height - dy
+        if (resizeHandle?.includes("e")) {
+          newWidth = point.x - bounds.x
         }
-        if (resizeHandle.includes("s")) {
-          newHeight = resizeStartBounds.height + dy
+        if (resizeHandle?.includes("s")) {
+          newHeight = point.y - bounds.y
         }
       }
 
-      onUpdateElement(selectedIds[0], { x: newX, y: newY, width: newWidth, height: newHeight })
+      if (newWidth !== element.width || newHeight !== element.height || newX !== element.x || newY !== element.y) {
+        onUpdateElement(element.id, { x: newX, y: newY, width: newWidth, height: newHeight })
+      }
       return
     }
 
-    if (tool === "select" && isMoving && selectedIds.length > 0) {
+    if (tool === "select" && isMoving && selectedIds.length > 0 && dragStart) {
       selectedIds.forEach((id) => {
         const element = elements.find((el) => el.id === id)
         if (element) {
+          // For moving, we calculate target position relative to offset
+          let targetX = rawPoint.x - dragOffset.x
+          let targetY = rawPoint.y - dragOffset.y
+
+          if (snapEnabled) {
+            targetX = snapToGrid(targetX)
+            targetY = snapToGrid(targetY)
+          }
+
           onUpdateElement(id, {
-            x: point.x - dragOffset.x,
-            y: point.y - dragOffset.y,
+            x: targetX,
+            y: targetY,
           })
         }
       })
-
-      setDragStart(point)
+      setDragStart(rawPoint)
       return
     }
 
     if (tool === "eraser") {
-      const element = getElementAtPoint(point)
+      const element = getElementAtPoint(rawPoint)
       if (element) {
         onDeleteElements([element.id])
       }
@@ -431,7 +467,7 @@ export function InfiniteCanvas({
 
       if (tool === "freehand" && element.points) {
         onUpdateElement(currentElementId, {
-          points: [...element.points, { x: point.x, y: point.y }],
+          points: [...element.points, { x: rawPoint.x, y: rawPoint.y }],
         })
       } else if (tool === "arrow" || tool === "line") {
         let endX = point.x
@@ -605,7 +641,7 @@ export function InfiniteCanvas({
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
     >
-      <CanvasGrid zoom={zoom} panOffset={panOffset} />
+      <CanvasGrid zoom={zoom} panOffset={panOffset} mode={gridMode} />
 
       <CanvasElementLayer elements={elements} panOffset={panOffset} zoom={zoom} editingElementId={editingElementId} />
 
