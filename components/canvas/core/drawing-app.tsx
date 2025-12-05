@@ -18,6 +18,10 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Data } from "@/types/canvas-types"
 import { useTheme } from "next-themes"
+import { SettingsModal, type UserData } from "@/components/settings/settings-modal"
+import { type ColorPalette } from "@/constant/palettes"
+import { DEFAULT_PALETTES } from "@/constant/palettes"
+import { DEFAULT_BACKGROUND_COLOR } from "@/constant/settings"
 
 const DARK_BACKGROUNDS = [
   "#121212",
@@ -35,6 +39,7 @@ interface DrawingAppProps {
   canEdit?: boolean
   isPublic?: boolean
   publicPermission?: string
+  user?: UserData
 }
 
 export function DrawingApp({
@@ -45,9 +50,29 @@ export function DrawingApp({
   canEdit = true,
   isPublic = false,
   publicPermission = "VIEW",
+  user,
 }: DrawingAppProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  // Settings Modal State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"user" | "app">("user");
+
+  // Combine user palettes with defaults, putting user palettes first
+  const userPalettes = user?.settings?.colorPalettes || [];
+  // Filter out any default palettes that might be duplicated in user settings by name (optional but good practice)
+  const defaultPalettes = DEFAULT_PALETTES.filter(
+    (dp) => !userPalettes.some((up) => up.name === dp.name)
+  );
+  const palettes = [...userPalettes, ...defaultPalettes];
+
+  const defaultBg = user?.settings?.defaultBackgroundColor || DEFAULT_BACKGROUND_COLOR;
+
+  const canvasInitialData = {
+    ...initialData,
+    backgroundColor: initialData?.backgroundColor || defaultBg
+  };
+
   const forceNew = searchParams?.get("new") === "true"
   const {
     state,
@@ -81,7 +106,7 @@ export function DrawingApp({
     pushHistory,
     setGridMode,
     setSnapToGrid,
-  } = useCanvasState(initialData, projectId, forceNew)
+  } = useCanvasState(canvasInitialData, projectId, forceNew)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -257,6 +282,11 @@ export function DrawingApp({
             textAlign={state.textAlign}
             selectedType={selectedElement?.type}
             currentTool={state.tool}
+            palettes={palettes}
+            onManagePresets={() => {
+              setSettingsTab("app");
+              setIsSettingsOpen(true);
+            }}
             onStrokeColorChange={setStrokeColor}
             onFillColorChange={setFillColor}
             onStrokeWidthChange={setStrokeWidth}
@@ -283,6 +313,18 @@ export function DrawingApp({
             onShare={handleShare}
             onSaveFile={saveToFile}
             onLoadFile={handleLoad}
+            onOpenSettings={() => {
+              setSettingsTab("user");
+              setIsSettingsOpen(true);
+            }}
+          />
+
+          <SettingsModal
+            open={isSettingsOpen}
+            onOpenChange={setIsSettingsOpen}
+            user={user}
+            defaultTab={settingsTab}
+            onTabChange={setSettingsTab}
           />
         </>
       )}

@@ -15,6 +15,7 @@ import {
     Share2,
     Copy,
     Check,
+    Settings,
 } from "lucide-react";
 import {
     Tooltip,
@@ -46,6 +47,7 @@ import {
 } from "@/components/ui/select";
 import { QRCode } from "@/components/kibo-ui/qr-code";
 import { usePathname } from "next/navigation";
+// import { useSession } from "@/lib/auth-client"; // Use this when client auth is ready
 
 interface RightSettingsMenuProps {
     projectId?: string;
@@ -58,6 +60,7 @@ interface RightSettingsMenuProps {
     onShare: (isPublic: boolean, permission: "VIEW" | "EDIT") => void;
     onSaveFile: () => void;
     onLoadFile: () => void;
+    onOpenSettings: () => void;
 }
 
 export function RightSettingsMenu({
@@ -71,6 +74,7 @@ export function RightSettingsMenu({
     onShare,
     onSaveFile,
     onLoadFile,
+    onOpenSettings,
 }: RightSettingsMenuProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [contentVisible, setContentVisible] = useState(false);
@@ -90,9 +94,13 @@ export function RightSettingsMenu({
         setContentVisible(visible);
     });
 
+    const onSetFullUrl = useEffectEvent((url: string) => {
+        setFullUrl(url);
+    });
+
     useEffect(() => {
         if (typeof window !== "undefined") {
-            setFullUrl(window.location.origin + pathname);
+            onSetFullUrl(window.location.origin + pathname);
         }
     }, [pathname]);
 
@@ -227,6 +235,18 @@ export function RightSettingsMenu({
                                     >
                                         <Upload className="h-4 w-4" />
                                         <span className="text-sm">Load File</span>
+                                    </Button>
+                                </div>
+
+                                {/* Settings */}
+                                <div style={getAnimationStyle(235)}>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-start gap-2 h-9"
+                                        onClick={onOpenSettings}
+                                    >
+                                        <Settings className="h-4 w-4" />
+                                        <span className="text-sm">Settings</span>
                                     </Button>
                                 </div>
 
@@ -409,6 +429,9 @@ export function RightSettingsMenu({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Settings Modal moved to DrawingApp */}
+
         </TooltipProvider>
     );
 }

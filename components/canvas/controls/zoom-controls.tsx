@@ -35,7 +35,7 @@ export function ZoomControls({ zoom, onZoomIn, onZoomOut, onZoomReset }: ZoomCon
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 rounded-lg text-xs font-medium min-w-[52px]"
+              className="h-8 px-2 rounded-lg text-xs min-w-[52px]"
               onClick={onZoomReset}
             >
               {Math.round(zoom * 100)}%

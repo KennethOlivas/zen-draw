@@ -38,6 +38,8 @@ export default function SignupPage() {
                 id="name"
                 name="name"
                 required
+                autoFocus
+                autoComplete="name"
                 className="w-full px-4 py-3 bg-gray-50 border-2 border-[#1a1a1a] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a1a1a] focus:ring-offset-2 transition-all"
                 placeholder="Pablo Picasso"
               />

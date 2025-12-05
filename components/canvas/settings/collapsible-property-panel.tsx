@@ -11,6 +11,7 @@ import {
   type TextAlign,
   type Tool,
 } from "@/types/canvas-types";
+import { type ColorPalette } from "@/constant/palettes";
 import { ColorPicker } from "./color-picker";
 import {
   COLORS,
@@ -52,6 +53,8 @@ interface CollapsiblePropertyPanelProps {
   textAlign: TextAlign;
   selectedType?: string;
   currentTool: Tool;
+  palettes?: ColorPalette[];
+  onManagePresets?: () => void;
   onStrokeColorChange: (color: string) => void;
   onFillColorChange: (color: string) => void;
   onStrokeWidthChange: (width: number) => void;
@@ -79,6 +82,8 @@ export function CollapsiblePropertyPanel({
   textAlign,
   selectedType,
   currentTool,
+  palettes,
+  onManagePresets,
   onStrokeColorChange,
   onFillColorChange,
   onStrokeWidthChange,
@@ -180,8 +185,10 @@ export function CollapsiblePropertyPanel({
                     <ColorPicker
                       color={strokeColor}
                       colors={COLORS}
+                      palettes={palettes}
                       label="Stroke"
                       onChange={onStrokeColorChange}
+                      onManagePresets={onManagePresets}
                     />
                   </div>
                 )}
@@ -192,8 +199,10 @@ export function CollapsiblePropertyPanel({
                     <ColorPicker
                       color={fillColor}
                       colors={FILL_COLORS}
+                      palettes={palettes}
                       label="Fill"
                       onChange={onFillColorChange}
+                      onManagePresets={onManagePresets}
                     />
                   </div>
                 )}

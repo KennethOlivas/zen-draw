@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Metadata } from "next";
+import { SettingsTrigger } from "@/components/projects/settings-trigger";
 
 export const metadata: Metadata = {
   title: "My Projects",
@@ -33,6 +34,7 @@ export default async function ProjectsPage() {
           <h1 className="text-4xl font-bold text-primary">My Projects</h1>
           <div className="flex items-center gap-4">
             <ModeToggle />
+            <SettingsTrigger user={session.user as any} />
             <Link href="/board?new=true">
               <Button>
                 <Plus className="w-4 h-4" />

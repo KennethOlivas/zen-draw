@@ -3,6 +3,11 @@ import { DrawingApp } from "@/components/canvas/core/drawing-app";
 import { Data } from "@/types/canvas-types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { type UserData } from "@/components/settings/settings-modal";
+import { type UserSettings } from "@/actions/settings/user-settings";
 
 interface PageProps {
   params: Promise<{ projectId: string }>;
@@ -42,6 +47,31 @@ export default async function ProjectBoardPage({ params }: PageProps) {
     }
   }
 
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  let userData: UserData | undefined;
+
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        image: true,
+        settings: true
+      }
+    });
+
+    if (user) {
+      userData = {
+        name: user.name,
+        image: user.image,
+        settings: user.settings as unknown as UserSettings
+      };
+    }
+  }
+
   return (
     <DrawingApp
       projectId={project.id}
@@ -51,6 +81,7 @@ export default async function ProjectBoardPage({ params }: PageProps) {
       canEdit={project.canEdit}
       isPublic={project.isPublic}
       publicPermission={project.publicPermission}
+      user={userData}
     />
   );
 }
