@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatDistanceToNow, format } from "date-fns";
+import { JsonValue } from "@prisma/client/runtime/client";
 
 interface ProjectCardProps {
   project: {
@@ -31,7 +32,7 @@ interface ProjectCardProps {
     thumbnail: string | null;
     updatedAt: Date;
     createdAt: Date;
-    data: any;
+    data: JsonValue;
     isPublic: boolean;
     publicPermission: string;
   };
@@ -191,7 +192,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <DialogHeader>
             <DialogTitle>Delete Project</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{project.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{project.name}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
