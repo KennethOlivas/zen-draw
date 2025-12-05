@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { InfiniteCanvas } from "./infinite-canvas"
 import { CollapsibleToolbar } from "../tools/collapsible-toolbar"
 import { CollapsiblePropertyPanel } from "../settings/collapsible-property-panel"
@@ -151,12 +151,9 @@ export function DrawingApp({
     }
   }, [])
 
-  const { setTheme, resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === "dark"
+  const { setTheme } = useTheme()
 
-  const toggleDark = () => {
-    setTheme(isDark ? "light" : "dark")
-  }
+
 
   const handleBackgroundChange = (color: string) => {
     setBackgroundColor(color)
@@ -240,8 +237,6 @@ export function DrawingApp({
             onClear={clearCanvas}
             onExportPNG={handleExportPNG}
             onExportSVG={handleExportSVG}
-            isDark={isDark}
-            onToggleDark={toggleDark}
             backgroundColor={state.backgroundColor}
             onBackgroundChange={handleBackgroundChange}
             gridMode={state.gridMode}

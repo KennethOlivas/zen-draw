@@ -14,8 +14,6 @@ import {
   Undo2,
   Redo2,
   Trash2,
-  Moon,
-  Sun,
   ImageIcon,
   FileDown,
   Diamond,
@@ -50,8 +48,6 @@ interface CollapsibleToolbarProps {
   onClear: () => void
   onExportPNG: () => void
   onExportSVG: () => void
-  isDark: boolean
-  onToggleDark: () => void
   backgroundColor: string
   onBackgroundChange: (color: string) => void
   gridMode: GridMode
@@ -98,8 +94,6 @@ export function CollapsibleToolbar({
   onClear,
   onExportPNG,
   onExportSVG,
-  isDark,
-  onToggleDark,
   backgroundColor,
   onBackgroundChange,
   gridMode,
@@ -323,23 +317,6 @@ export function CollapsibleToolbar({
                   </DropdownMenu>
 
                   <Separator orientation="vertical" className="h-6 mx-1" style={getSeparatorStyle(isExpanded, 380)} />
-
-                  {/* Dark Mode Toggle */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-lg"
-                        onClick={onToggleDark}
-                        style={getItemStyle(isExpanded, 390)}
-                      >
-                        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Toggle Theme</TooltipContent>
-                  </Tooltip>
-
                   <div style={getItemStyle(isExpanded, 400)}>
                     <BackgroundPicker backgroundColor={backgroundColor} onBackgroundChange={onBackgroundChange} />
                   </div>
