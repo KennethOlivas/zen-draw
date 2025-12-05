@@ -310,7 +310,7 @@ export default function LandingPage() {
         <section className="px-6 py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-                <Highlighter action="highlight" color="#ffd1dc" >
+                <Highlighter action="highlight" color="#fda0d0">
               <h2 className="text-4xl md:text-5xl font-bold mb-4">
                 Built for Everyone
               </h2>
