@@ -75,7 +75,6 @@ export function InfiniteCanvas({
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState<Point | null>(null)
   const [currentElementId, setCurrentElementId] = useState<string | null>(null)
-  const [dragOffset, setDragOffset] = useState<Point>({ x: 0, y: 0 })
   const [isMoving, setIsMoving] = useState(false)
   const [textInput, setTextInput] = useState<{ x: number; y: number; visible: boolean }>({
     x: 0,
@@ -103,6 +102,13 @@ export function InfiniteCanvas({
     elementId: string
     point: ConnectionPoint
     position: Point
+  } | null>(null)
+
+  // Selection box state
+  const [selectionBox, setSelectionBox] = useState<{
+    start: Point
+    current: Point
+    isVisible: boolean
   } | null>(null)
 
   const snapToGrid = (value: number) => {
@@ -281,16 +287,21 @@ export function InfiniteCanvas({
       const element = getElementAtPoint(rawPoint)
       if (element) {
         if (!selectedIds.includes(element.id)) {
-          onSelectionChange([element.id])
+          onSelectionChange([element.id]) // Clicked unselected element: select it (and deselect others)
         }
+        // If clicked on already selected element, keep selection (to allow dragging group)
+
         setIsMoving(true)
-        setDragOffset({
-          x: rawPoint.x - element.x,
-          y: rawPoint.y - element.y,
-        })
-        setDragStart(rawPoint)
+        // For moving, we use delta from dragStart, so we capture the start point (snapped if needed)
+        setDragStart(snapEnabled ? snapPoint(rawPoint) : rawPoint)
       } else {
+        // Clicked on empty space
         onSelectionChange([])
+        setSelectionBox({
+          start: rawPoint,
+          current: rawPoint,
+          isVisible: true,
+        })
         setDragStart(rawPoint)
       }
       return
@@ -430,27 +441,65 @@ export function InfiniteCanvas({
       return
     }
 
-    if (tool === "select" && isMoving && selectedIds.length > 0 && dragStart) {
-      selectedIds.forEach((id) => {
-        const element = elements.find((el) => el.id === id)
-        if (element) {
-          // For moving, we calculate target position relative to offset
-          let targetX = rawPoint.x - dragOffset.x
-          let targetY = rawPoint.y - dragOffset.y
+    if (tool === "select") {
+      if (selectionBox?.isVisible) {
+        setSelectionBox((prev) => prev ? ({ ...prev, current: rawPoint }) : null)
 
-          if (snapEnabled) {
-            targetX = snapToGrid(targetX)
-            targetY = snapToGrid(targetY)
+        // Calculate intersection with elements
+        const x1 = Math.min(selectionBox.start.x, rawPoint.x)
+        const y1 = Math.min(selectionBox.start.y, rawPoint.y)
+        const x2 = Math.max(selectionBox.start.x, rawPoint.x)
+        const y2 = Math.max(selectionBox.start.y, rawPoint.y)
+
+        const intersectingIds: string[] = []
+
+        elements.forEach(element => {
+          const bounds = getElementBounds(element)
+          const elementRight = bounds.x + bounds.width
+          const elementBottom = bounds.y + bounds.height
+
+          // Check overlap
+          const isIntersecting = !(
+            elementRight < x1 ||
+            bounds.x > x2 ||
+            elementBottom < y1 ||
+            bounds.y > y2
+          )
+
+          if (isIntersecting) {
+            intersectingIds.push(element.id)
           }
+        })
 
-          onUpdateElement(id, {
-            x: targetX,
-            y: targetY,
-          })
+        // Only update if selection changed to avoid excessive updates 
+        // (react state updates are cheap if value is same, but `onSelectionChange` might be expensive up the tree)
+        // Ideally checking strict equality of arrays
+        if (intersectingIds.length !== selectedIds.length || !intersectingIds.every(id => selectedIds.includes(id))) {
+          onSelectionChange(intersectingIds)
         }
-      })
-      setDragStart(rawPoint)
-      return
+
+        return
+      }
+
+      if (isMoving && selectedIds.length > 0 && dragStart) {
+        const currentPoint = snapEnabled ? snapPoint(rawPoint) : rawPoint
+        const dx = currentPoint.x - dragStart.x
+        const dy = currentPoint.y - dragStart.y
+
+        if (dx !== 0 || dy !== 0) {
+          selectedIds.forEach((id) => {
+            const element = elements.find((el) => el.id === id)
+            if (element) {
+              onUpdateElement(id, {
+                x: element.x + dx,
+                y: element.y + dy,
+              })
+            }
+          })
+          setDragStart(currentPoint)
+        }
+        return
+      }
     }
 
     if (tool === "eraser") {
@@ -551,6 +600,12 @@ export function InfiniteCanvas({
     if (currentElementId) {
       onFinishDrawing()
     }
+
+    // Reset selection box logic
+    if (selectionBox?.isVisible) {
+      setSelectionBox(null)
+    }
+
     setIsDragging(false)
     setDragStart(null)
     setCurrentElementId(null)
@@ -655,6 +710,18 @@ export function InfiniteCanvas({
       />
 
       <SelectionOverlay selectedIds={selectedIds} elements={elements} zoom={zoom} panOffset={panOffset} />
+
+      {selectionBox?.isVisible && (
+        <div
+          className="absolute border border-blue-500 bg-blue-500/10 pointer-events-none z-50"
+          style={{
+            left: Math.min(selectionBox.start.x, selectionBox.current.x) * zoom + panOffset.x,
+            top: Math.min(selectionBox.start.y, selectionBox.current.y) * zoom + panOffset.y,
+            width: Math.abs(selectionBox.current.x - selectionBox.start.x) * zoom,
+            height: Math.abs(selectionBox.current.y - selectionBox.start.y) * zoom,
+          }}
+        />
+      )}
 
       <TextInputOverlay
         visible={textInput.visible}
