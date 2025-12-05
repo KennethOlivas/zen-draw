@@ -1,4 +1,4 @@
-import { DrawingApp } from "@/components/canvas/drawing-app"
+import { DrawingApp } from "@/components/canvas/core/drawing-app"
 import type { Viewport, Metadata } from 'next'
 import { Suspense } from "react"
 import { BoardSkeleton } from "@/components/skeletons/board-skeleton"

@@ -1,5 +1,5 @@
 import { getProject } from "@/actions/project";
-import { DrawingApp } from "@/components/canvas/drawing-app";
+import { DrawingApp } from "@/components/canvas/core/drawing-app";
 import { Data } from "@/types/canvas-types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";

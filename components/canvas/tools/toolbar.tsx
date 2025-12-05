@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator"
 import type { Tool } from "@/types/canvas-types"
 import { cn } from "@/lib/utils"
 import { BackgroundPicker } from "./background-picker"
-import { HelpModal } from "./help-modal"
+import { HelpModal } from "../settings/help-modal"
 
 interface ToolbarProps {
   currentTool: Tool
