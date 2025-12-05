@@ -27,6 +27,10 @@ import {
   Circle,
   ChevronLeft,
   ChevronRight,
+  BringToFront,
+  SendToBack,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -57,6 +61,10 @@ interface CollapsiblePropertyPanelProps {
   onEdgeStyleChange: (arg0: EdgeStyle) => void;
   onFontSizeChange: (size: number) => void;
   onTextAlignChange: (align: TextAlign) => void;
+  onBringToFront: () => void;
+  onBringForward: () => void;
+  onSendBackward: () => void;
+  onSendToBack: () => void;
 }
 
 export function CollapsiblePropertyPanel({
@@ -80,6 +88,10 @@ export function CollapsiblePropertyPanel({
   onEdgeStyleChange,
   onFontSizeChange,
   onTextAlignChange,
+  onBringToFront,
+  onBringForward,
+  onSendBackward,
+  onSendToBack,
 }: CollapsiblePropertyPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [contentVisible, setContentVisible] = useState(true);
@@ -412,6 +424,63 @@ export function CollapsiblePropertyPanel({
                     </div>
                   </>
                 )}
+
+                {/* Layering Controls */}
+                <Separator style={getSeparatorStyle(425)} />
+                <div className="space-y-1.5" style={getAnimationStyle(450)}>
+                  <Label className="text-xs text-muted-foreground">
+                    Layering
+                  </Label>
+                  <div className="flex gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="flex-1 h-7 rounded-md border border-border hover:bg-accent/50 flex items-center justify-center transition-colors"
+                          onClick={onSendToBack}
+                        >
+                          <SendToBack className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Send to back</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="flex-1 h-7 rounded-md border border-border hover:bg-accent/50 flex items-center justify-center transition-colors"
+                          onClick={onSendBackward}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Send backward</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="flex-1 h-7 rounded-md border border-border hover:bg-accent/50 flex items-center justify-center transition-colors"
+                          onClick={onBringForward}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Bring forward</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="flex-1 h-7 rounded-md border border-border hover:bg-accent/50 flex items-center justify-center transition-colors"
+                          onClick={onBringToFront}
+                        >
+                          <BringToFront className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Bring to front</TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
               </div>
             )}
           </div>

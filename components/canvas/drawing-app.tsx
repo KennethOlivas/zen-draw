@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useEffectEvent, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { InfiniteCanvas } from "./infinite-canvas"
 import { CollapsibleToolbar } from "./collapsible-toolbar"
 import { CollapsiblePropertyPanel } from "./collapsible-property-panel"
@@ -102,9 +102,8 @@ export function DrawingApp({
         toast.success("Project created")
         router.push(`/board/${newProject.id}`)
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to save project")
-      console.error(error)
     }
   }
 
@@ -113,7 +112,7 @@ export function DrawingApp({
     try {
       await updateProjectShare(projectId, isPublic, permission)
       toast.success("Share settings updated")
-    } catch (error) {
+    } catch {
       toast.error("Failed to update share settings")
     }
   }
@@ -123,7 +122,7 @@ export function DrawingApp({
     try {
       await renameProject(projectId, newName)
       toast.success("Project renamed")
-    } catch (error) {
+    } catch {
       toast.error("Failed to rename project")
     }
   }
@@ -266,6 +265,10 @@ export function DrawingApp({
             onEdgeStyleChange={setEdgeStyle}
             onFontSizeChange={setFontSize}
             onTextAlignChange={setTextAlign}
+            onBringToFront={() => state.selectedIds.length > 0 && bringToFront(state.selectedIds)}
+            onBringForward={() => state.selectedIds.length > 0 && bringForward(state.selectedIds)}
+            onSendBackward={() => state.selectedIds.length > 0 && sendBackward(state.selectedIds)}
+            onSendToBack={() => state.selectedIds.length > 0 && sendToBack(state.selectedIds)}
           />
 
           <RightSettingsMenu
