@@ -11,6 +11,7 @@ export interface UserSettings {
     theme?: string;
     defaultBackgroundColor?: string;
     colorPalettes?: ColorPalette[];
+    disableDefaultColors?: boolean;
 }
 
 export async function updateUserProfile(data: { name?: string; image?: string }) {

@@ -19,7 +19,6 @@ import { toast } from "sonner"
 import { Data } from "@/types/canvas-types"
 import { useTheme } from "next-themes"
 import { SettingsModal, type UserData } from "@/components/settings/settings-modal"
-import { type ColorPalette } from "@/constant/palettes"
 import { DEFAULT_PALETTES } from "@/constant/palettes"
 import { DEFAULT_BACKGROUND_COLOR } from "@/constant/settings"
 
@@ -60,6 +59,7 @@ export function DrawingApp({
 
   // Combine user palettes with defaults, putting user palettes first
   const userPalettes = user?.settings?.colorPalettes || [];
+  const disableDefaultColors = user?.settings?.disableDefaultColors || false;
   // Filter out any default palettes that might be duplicated in user settings by name (optional but good practice)
   const defaultPalettes = DEFAULT_PALETTES.filter(
     (dp) => !userPalettes.some((up) => up.name === dp.name)
@@ -283,6 +283,7 @@ export function DrawingApp({
             selectedType={selectedElement?.type}
             currentTool={state.tool}
             palettes={palettes}
+            disableDefaultColors={disableDefaultColors}
             onManagePresets={() => {
               setSettingsTab("app");
               setIsSettingsOpen(true);

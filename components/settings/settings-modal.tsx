@@ -15,6 +15,7 @@ import { Loader2, Settings, User, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 export interface UserData {
     name?: string | null;
@@ -44,6 +45,7 @@ export function SettingsModal({ open, onOpenChange, user, defaultTab = "user", o
     // App Settings State
     const [defaultBackgroundColor, setDefaultBackgroundColor] = useState("#ffffff");
     const [colorPalettes, setColorPalettes] = useState<ColorPalette[]>([]);
+    const [disableDefaultColors, setDisableDefaultColors] = useState(false);
 
     const onSetDefaultBackgroundColor = useEffectEvent((color: string) => {
         setDefaultBackgroundColor(color);
@@ -53,12 +55,19 @@ export function SettingsModal({ open, onOpenChange, user, defaultTab = "user", o
         setColorPalettes(palettes);
     });
 
+    const onSetDisableDefaultColors = useEffectEvent((disable: boolean) => {
+        setDisableDefaultColors(disable);
+    });
+
     useEffect(() => {
         if (user?.settings?.defaultBackgroundColor) {
             onSetDefaultBackgroundColor(user.settings.defaultBackgroundColor);
         }
         if (user?.settings?.colorPalettes) {
             onSetColorPalettes(user.settings.colorPalettes);
+        }
+        if (user?.settings?.disableDefaultColors) {
+            onSetDisableDefaultColors(user.settings.disableDefaultColors);
         }
     }, [user]);
 
@@ -109,7 +118,8 @@ export function SettingsModal({ open, onOpenChange, user, defaultTab = "user", o
         setIsLoading(true);
         const res = await updateAppSettings({
             defaultBackgroundColor,
-            colorPalettes
+            colorPalettes,
+            disableDefaultColors
         });
         if (res.error) {
             toast.error(res.error);
@@ -236,22 +246,38 @@ export function SettingsModal({ open, onOpenChange, user, defaultTab = "user", o
                                 <h3 className="text-lg font-medium">Appearance</h3>
                                 <div className="space-y-2">
                                     <Label>Default Canvas Background</Label>
-                                    <div className="grid grid-cols-8 gap-2">
+                                    <p className="text-sm text-muted-foreground">
+                                        Choose the default background color for new projects.
+                                    </p>
+                                    <div className="grid grid-cols-8 gap-4">
                                         {BACKGROUND_COLORS.map((color) => (
-                                            <button
+                                            <Button
                                                 key={color}
+                                                size="icon-lg"
                                                 className={cn(
-                                                    "w-8 h-8 rounded-full border-2 transition-transform hover:scale-110",
-                                                    defaultBackgroundColor === color ? "border-primary ring-2 ring-primary/30" : "border-border",
+                                                    
+                                                    defaultBackgroundColor === color ? "border-none ring-2 ring-yellow-500" : "border-border",
                                                 )}
                                                 style={{ backgroundColor: color }}
                                                 onClick={() => setDefaultBackgroundColor(color)}
                                             />
                                         ))}
                                     </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        Choose the default background color for new projects.
-                                    </p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-0.5">
+                                            <Label>Disable Default Colors</Label>
+                                            <div className="text-sm text-muted-foreground">
+                                                Hide default colors in the color picker and only show presets.
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={disableDefaultColors}
+                                            onCheckedChange={setDisableDefaultColors}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

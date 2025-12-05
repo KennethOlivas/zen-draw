@@ -38,6 +38,7 @@ interface CollapsiblePropertyPanelProps {
     selectedType?: string;
     currentTool: Tool;
     palettes?: ColorPalette[];
+    disableDefaultColors?: boolean;
     onManagePresets?: () => void;
     onStrokeColorChange: (color: string) => void;
     onFillColorChange: (color: string) => void;
@@ -68,6 +69,7 @@ export function CollapsiblePropertyPanel(props: CollapsiblePropertyPanelProps) {
         fontSize,
         textAlign,
         palettes,
+        disableDefaultColors,
         onManagePresets,
         onStrokeColorChange,
         onFillColorChange,
@@ -146,6 +148,7 @@ export function CollapsiblePropertyPanel(props: CollapsiblePropertyPanelProps) {
                                             color={strokeColor}
                                             colors={COLORS}
                                             palettes={palettes}
+                                            disableDefaultColors={disableDefaultColors}
                                             label="Stroke"
                                             onChange={onStrokeColorChange}
                                             onManagePresets={onManagePresets}
@@ -160,6 +163,7 @@ export function CollapsiblePropertyPanel(props: CollapsiblePropertyPanelProps) {
                                             color={fillColor}
                                             colors={FILL_COLORS}
                                             palettes={palettes}
+                                            disableDefaultColors={disableDefaultColors}
                                             label="Fill"
                                             onChange={onFillColorChange}
                                             onManagePresets={onManagePresets}
