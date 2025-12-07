@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zen Draw
+
+[Live Demo](https://zen-draw.kennetholivas.com/)
+
+Zen Draw is a modern, infinite canvas drawing application built with the latest web technologies. Inspired by the simplicity of classic tools like MS Paint but engineered for the modern web, Zen Draw offers a robust set of features for digital artists and diagramming enthusiasts. It features a unique brush engine with opacity stacking and texture mapping, a comprehensive project management system, and a highly customizable interface.
+
+## Features
+
+- **Infinite Canvas**: A limitless drawing surface that supports smooth zooming and panning.
+- **Advanced Brush Engine**:
+  - **Opacity Stacking**: Simulates real stroke layering.
+  - **Decay Effects**: Dynamic brush strokes that change over time/distance.
+  - **Texture Mapping**: Support for various brush textures.
+- **Smart Grid System**:
+  - Toggleable "Snap to Grid" functionality.
+  - Multiple grid modes including Mesh and Dot grids.
+  - Customizable grid colors and sizes.
+- **Project Management**:
+  - Create, save, and organize multiple projects.
+  - **Auto-Save & Deferred Save**: Never lose work; unauthenticated users can start drawing and save later upon signing up.
+- **Access Control**:
+  - Private and Public boards.
+  - Secure board sharing and viewing permissions.
+- **Modern UI/UX**:
+  - **Dark/Light Mode**: Fully supported with optimized color palettes and shadows.
+  - **Collapsible Panels**: Maximize workspace with retractable toolbars and property panels.
+  - **Toast Notifications**: Real-time feedback for administrative actions.
+- **Authentication**: Secure user sessions powered by Better Auth.
+
+## Tech Stack
+
+**Frontend:**
+- [Next.js 16](https://nextjs.org/) (App Router)
+- [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/) (Animations)
+- [Radix UI](https://www.radix-ui.com/) (Headless UI Components)
+- [Lucide React](https://lucide.dev/) (Icons)
+
+**Backend & Data:**
+- [PostgreSQL](https://www.postgresql.org/) (Database)
+- [Prisma](https://www.prisma.io/) (ORM)
+- [Better Auth](https://better-auth.com/) (Authentication)
+- New Server Actions for seamless client-server communication.
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to set up the project locally.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Node.js (Latest LTS recommended)
+- PostgreSQL database
+- pnpm (Package manager)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1.  **Clone the repository:**
 
-## Learn More
+    ```bash
+    git clone https://github.com/KennethOlivas/zen-draw.git
+    cd zen-draw
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+2.  **Install dependencies:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    This project uses `pnpm`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    ```bash
+    pnpm install
+    ```
 
-## Deploy on Vercel
+3.  **Environment Setup:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    Create a `.env` file in the root directory. You can copy the `.env.example` if available, or add the following required variables:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```env
+    # Database
+    DATABASE_URL="postgresql://user:password@localhost:5432/zendraw?schema=public"
+
+    # Authentication (Better Auth)
+    BETTER_AUTH_SECRET="your_generated_secret_here"
+    BETTER_AUTH_URL="http://localhost:3000"
+    ```
+
+4.  **Database Migration:**
+
+    Generate the Prisma client and push the schema to your database.
+
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    ```
+
+5.  **Run the Development Server:**
+
+    ```bash
+    pnpm dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Contributing
+
+Contributions are welcome! If you have suggestions or find bugs, please open an issue or submit a pull request.
+
+## License
+
+Copyright © Kenneth Olivas. All rights reserved.
