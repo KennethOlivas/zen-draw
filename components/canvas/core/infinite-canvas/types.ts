@@ -25,6 +25,8 @@ export interface InfiniteCanvasProps {
     readOnly?: boolean
     gridMode?: "none" | "dots" | "grid" | "mesh"
     snapToGrid?: boolean
+    gridSize?: number
+    snapThreshold?: number
 }
 
 export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "start" | "end" | null

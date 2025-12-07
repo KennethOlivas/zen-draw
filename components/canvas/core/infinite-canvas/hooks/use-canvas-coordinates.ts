@@ -8,6 +8,8 @@ interface UseCanvasCoordinatesProps {
     panOffset: Point
     gridMode?: "none" | "dots" | "grid" | "mesh"
     snapToGrid?: boolean
+    gridSize?: number
+    snapThreshold?: number
     elements: CanvasElement[]
 }
 
@@ -17,12 +19,14 @@ export function useCanvasCoordinates({
     panOffset,
     gridMode = "none",
     snapToGrid = true,
+    gridSize = 20,
+    snapThreshold = 25,
     elements,
 }: UseCanvasCoordinatesProps) {
     const snapToGridValue = (value: number) => {
         if (!snapToGrid) return value
-        const gridSize = gridMode === "mesh" ? 5 : 20
-        return Math.round(value / gridSize) * gridSize
+        const currentGridSize = gridMode === "mesh" ? gridSize / 4 : gridSize
+        return Math.round(value / currentGridSize) * currentGridSize
     }
 
     const snapPoint = (point: Point): Point => {
@@ -47,13 +51,13 @@ export function useCanvasCoordinates({
         point: Point,
         excludeId?: string,
     ): { elementId: string; point: ConnectionPoint; position: Point } | null => {
-        const snapThreshold = 25 / zoom
+        const currentSnapThreshold = snapThreshold / zoom
 
         for (const el of elements) {
             if (el.id === excludeId) continue
             if (el.type === "line" || el.type === "arrow" || el.type === "freehand" || el.type === "text") continue
 
-            const nearest = findNearestConnectionPoint(point, el, snapThreshold)
+            const nearest = findNearestConnectionPoint(point, el, currentSnapThreshold)
             if (nearest) {
                 return { elementId: el.id, point: nearest.point, position: nearest.position }
             }

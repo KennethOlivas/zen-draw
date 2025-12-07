@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ColorPaletteManager } from "@/components/settings/color-palette-manager";
 import { AppearanceSection } from "./appearance-section";
+import { CanvasPreferencesSection } from "./canvas-preferences-section";
 import { updateAppSettings, type UserSettings } from "@/actions/settings/user-settings";
 import { type ColorPalette } from "@/constant/palettes";
 
@@ -23,6 +24,8 @@ export function AppSettingsTab({ settings }: AppSettingsTabProps) {
     const [defaultBackgroundColor, setDefaultBackgroundColor] = useState("#ffffff");
     const [colorPalettes, setColorPalettes] = useState<ColorPalette[]>([]);
     const [disableDefaultColors, setDisableDefaultColors] = useState(false);
+    const [gridSize, setGridSize] = useState(20);
+    const [snapThreshold, setSnapThreshold] = useState(25);
 
     const onSetDefaultBackgroundColor = useEffectEvent((color: string) => {
         setDefaultBackgroundColor(color);
@@ -36,6 +39,14 @@ export function AppSettingsTab({ settings }: AppSettingsTabProps) {
         setDisableDefaultColors(disable);
     });
 
+    const onSetGridSize = useEffectEvent((size: number) => {
+        setGridSize(size);
+    });
+
+    const onSetSnapThreshold = useEffectEvent((threshold: number) => {
+        setSnapThreshold(threshold);
+    });
+
     useEffect(() => {
         if (settings?.defaultBackgroundColor) {
             onSetDefaultBackgroundColor(settings.defaultBackgroundColor);
@@ -46,6 +57,12 @@ export function AppSettingsTab({ settings }: AppSettingsTabProps) {
         if (settings?.disableDefaultColors) {
             onSetDisableDefaultColors(settings.disableDefaultColors);
         }
+        if (settings?.gridSize) {
+            onSetGridSize(settings.gridSize);
+        }
+        if (settings?.snapThreshold) {
+            onSetSnapThreshold(settings.snapThreshold);
+        }
     }, [settings]);
 
     const handleUpdateAppSettings = async () => {
@@ -53,7 +70,9 @@ export function AppSettingsTab({ settings }: AppSettingsTabProps) {
         const res = await updateAppSettings({
             defaultBackgroundColor,
             colorPalettes,
-            disableDefaultColors
+            disableDefaultColors,
+            gridSize,
+            snapThreshold
         });
         if (res.error) {
             toast.error(res.error);
@@ -74,6 +93,15 @@ export function AppSettingsTab({ settings }: AppSettingsTabProps) {
                 disableDefaultColors={disableDefaultColors}
                 setDisableDefaultColors={setDisableDefaultColors}
             />
+
+            <div className="border-t pt-6">
+                <CanvasPreferencesSection
+                    gridSize={gridSize}
+                    setGridSize={setGridSize}
+                    snapThreshold={snapThreshold}
+                    setSnapThreshold={setSnapThreshold}
+                />
+            </div>
 
             <div className="border-t pt-6">
                 <ColorPaletteManager

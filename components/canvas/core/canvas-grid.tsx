@@ -1,35 +1,35 @@
-import { GRID_SIZE } from "@/constant/canvas-constants"
 import { GridMode } from "@/types/canvas-types"
 
 interface CanvasGridProps {
     zoom: number
     panOffset: { x: number; y: number }
     mode: GridMode
+    gridSize?: number
 }
 
-export function CanvasGrid({ zoom, panOffset, mode }: CanvasGridProps) {
+export function CanvasGrid({ zoom, panOffset, mode, gridSize = 20 }: CanvasGridProps) {
     if (mode === "none") return null
 
-    const gridSize = GRID_SIZE * zoom
-    const gridOffsetX = panOffset.x % gridSize
-    const gridOffsetY = panOffset.y % gridSize
+    const effectiveGridSize = gridSize * zoom
+    const gridOffsetX = panOffset.x % effectiveGridSize
+    const gridOffsetY = panOffset.y % effectiveGridSize
 
     return (
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-50">
             <defs>
                 <pattern
                     id="grid-pattern"
-                    width={gridSize}
-                    height={gridSize}
+                    width={effectiveGridSize}
+                    height={effectiveGridSize}
                     patternUnits="userSpaceOnUse"
                     x={gridOffsetX}
                     y={gridOffsetY}
                 >
                     {mode === "dots" ? (
-                        <circle cx={gridSize / 2} cy={gridSize / 2} r={1} fill="var(--canvas-grid)" />
+                        <circle cx={effectiveGridSize / 2} cy={effectiveGridSize / 2} r={1} fill="var(--canvas-grid)" />
                     ) : mode === "grid" ? (
                         <path
-                            d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
+                            d={`M ${effectiveGridSize} 0 L 0 0 0 ${effectiveGridSize}`}
                             fill="none"
                             stroke="var(--canvas-grid)"
                             strokeWidth={1}
@@ -38,14 +38,14 @@ export function CanvasGrid({ zoom, panOffset, mode }: CanvasGridProps) {
                         // Mesh mode - dense grid
                         <>
                             <path
-                                d={`M ${gridSize / 4} 0 V ${gridSize} M ${gridSize / 2} 0 V ${gridSize} M ${gridSize * 3 / 4} 0 V ${gridSize} M 0 ${gridSize / 4} H ${gridSize} M 0 ${gridSize / 2} H ${gridSize} M 0 ${gridSize * 3 / 4} H ${gridSize}`}
+                                d={`M ${effectiveGridSize / 4} 0 V ${effectiveGridSize} M ${effectiveGridSize / 2} 0 V ${effectiveGridSize} M ${effectiveGridSize * 3 / 4} 0 V ${effectiveGridSize} M 0 ${effectiveGridSize / 4} H ${effectiveGridSize} M 0 ${effectiveGridSize / 2} H ${effectiveGridSize} M 0 ${effectiveGridSize * 3 / 4} H ${effectiveGridSize}`}
                                 fill="none"
                                 stroke="var(--canvas-grid)"
                                 strokeWidth={0.5}
                                 opacity={0.5}
                             />
                             <path
-                                d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
+                                d={`M ${effectiveGridSize} 0 L 0 0 0 ${effectiveGridSize}`}
                                 fill="none"
                                 stroke="var(--canvas-grid)"
                                 strokeWidth={1}

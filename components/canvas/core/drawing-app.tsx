@@ -67,6 +67,8 @@ export function DrawingApp({
   const palettes = [...userPalettes, ...defaultPalettes];
 
   const defaultBg = user?.settings?.defaultBackgroundColor || DEFAULT_BACKGROUND_COLOR;
+  const gridSize = user?.settings?.gridSize || 20;
+  const snapThreshold = user?.settings?.snapThreshold || 25;
 
   const canvasInitialData = {
     ...initialData,
@@ -411,6 +413,8 @@ export function DrawingApp({
         readOnly={!canEdit}
         gridMode={state.gridMode}
         snapToGrid={state.snapToGrid}
+        gridSize={gridSize}
+        snapThreshold={snapThreshold}
       />
     </div>
   )

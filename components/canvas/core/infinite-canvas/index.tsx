@@ -39,6 +39,8 @@ export function InfiniteCanvas({
     readOnly = false,
     gridMode = "none",
     snapToGrid: snapEnabled = true,
+    gridSize = 20,
+    snapThreshold = 25,
 }: InfiniteCanvasProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const textInputRef = useRef<HTMLTextAreaElement>(null) as RefObject<HTMLTextAreaElement>
@@ -50,6 +52,8 @@ export function InfiniteCanvas({
         panOffset,
         gridMode,
         snapToGrid: snapEnabled,
+        gridSize,
+        snapThreshold,
         elements,
     })
 
@@ -159,7 +163,7 @@ export function InfiniteCanvas({
             onPointerUp={interaction.handlePointerUp}
             onPointerLeave={interaction.handlePointerUp}
         >
-            <CanvasGrid zoom={zoom} panOffset={panOffset} mode={gridMode} />
+            <CanvasGrid zoom={zoom} panOffset={panOffset} mode={gridMode} gridSize={gridSize} />
 
             <CanvasElementLayer
                 elements={elements}

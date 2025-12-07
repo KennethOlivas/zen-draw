@@ -12,6 +12,8 @@ export interface UserSettings {
     defaultBackgroundColor?: string;
     colorPalettes?: ColorPalette[];
     disableDefaultColors?: boolean;
+    gridSize?: number;
+    snapThreshold?: number;
 }
 
 export async function updateUserProfile(data: { name?: string; image?: string }) {
