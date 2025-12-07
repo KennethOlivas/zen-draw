@@ -241,7 +241,7 @@ export default function LandingPage() {
               <p className="text-xl text-muted-foreground">
                 Powerful tools wrapped in a&nbsp;
                 <Highlighter color="#a5b4fc" action="underline" isView={true}>
-                simple interface.
+                  simple interface.
                 </Highlighter>
               </p>
             </div>
@@ -310,10 +310,10 @@ export default function LandingPage() {
         <section className="px-6 py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-                <Highlighter action="highlight" color="#fda0d0">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Built for Everyone
-              </h2>
+              <Highlighter action="highlight" color="#fda0d0">
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                  Built for Everyone
+                </h2>
               </Highlighter>
               <p className="text-xl text-gray-600">
                 From classrooms to boardrooms, Zen Draw adapts to you.
@@ -338,7 +338,9 @@ export default function LandingPage() {
                 <div key={i} className="relative group">
                   <div className="absolute inset-0 bg-foreground rounded-xl rotate-1 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="relative bg-[#fff9c4] dark:bg-yellow-950 p-8 rounded-xl border-2 border-foreground h-full">
-                    <h3 className="text-2xl font-bold mb-4 text-foreground">{useCase.title}</h3>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">
+                      {useCase.title}
+                    </h3>
                     <p className="text-lg text-foreground">{useCase.desc}</p>
                   </div>
                 </div>
@@ -348,48 +350,53 @@ export default function LandingPage() {
         </section>
 
         {/* Integrations & Security */}
-        <section className="px-6 py-20 bg-zinc-900 dark:bg-zinc-950 text-white">
+        <section className="px-6 py-20 bg-zinc-800 dark:bg-zinc-950 text-white">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <Cloud className="w-8 h-8 text-yellow-300" />
-                <h2 className="text-3xl font-bold">Integrations</h2>
+            <Highlighter action="circle" color="#fda0d0">
+              <div className="p-24">
+                <div className="flex items-center gap-3 mb-6">
+                  <Cloud className="w-8 h-8 text-yellow-300" />
+                  <h2 className="text-3xl font-bold">Integrations</h2>
+                </div>
+                <ul className="space-y-4 text-lg text-zinc-400">
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    Cloud sync across devices
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    Export to Notion & Figma (Coming Soon)
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    GitHub Gist integration
+                  </li>
+                </ul>
               </div>
-              <ul className="space-y-4 text-lg text-zinc-400">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  Cloud sync across devices
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  Export to Notion & Figma (Coming Soon)
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  GitHub Gist integration
-                </li>
-              </ul>
-            </div>
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <Lock className="w-8 h-8 text-yellow-300" />
-                <h2 className="text-3xl font-bold">Security & Privacy</h2>
+            </Highlighter>
+
+            <Highlighter action="circle" color="#a5b4fc">
+              <div className="p-24">
+                <div className="flex items-center gap-3 mb-6">
+                  <Lock className="w-8 h-8 text-yellow-300" />
+                  <h2 className="text-3xl font-bold">Security & Privacy</h2>
+                </div>
+                <ul className="space-y-4 text-lg text-zinc-400">
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    End-to-end encryption for private boards
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    No tracking or ads
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-400" />
+                    Local-first data storage
+                  </li>
+                </ul>
               </div>
-              <ul className="space-y-4 text-lg text-zinc-400">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  End-to-end encryption for private boards
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  No tracking or ads
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-400" />
-                  Local-first data storage
-                </li>
-              </ul>
-            </div>
+            </Highlighter>
           </div>
         </section>
 
@@ -411,7 +418,9 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold mb-2">Free</h3>
                 <div className="text-4xl font-bold mb-6">
                   $0
-                  <span className="text-lg text-muted-foreground font-normal">/mo</span>
+                  <span className="text-lg text-muted-foreground font-normal">
+                    /mo
+                  </span>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center gap-3">
@@ -443,7 +452,9 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold mb-2">Pro</h3>
                 <div className="text-4xl font-bold mb-6">
                   $12
-                  <span className="text-lg text-background/70 font-normal">/mo</span>
+                  <span className="text-lg text-background/70 font-normal">
+                    /mo
+                  </span>
                 </div>
                 <ul className="space-y-4 mb-8 text-background/80">
                   <li className="flex items-center gap-3">
@@ -578,7 +589,16 @@ export default function LandingPage() {
 
           <div className="pt-8 border-t border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-zinc-400">
-              © 2025 Zen Draw. All rights reserved. Created by Kenneth Olivas.
+              © 2025 Zen Draw. All rights reserved. Created by{" "}
+              <a
+                href="https://kennetholivas.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                Kenneth Olivas
+              </a>
+              .
             </div>
             <div className="flex gap-6">
               <Link
@@ -589,7 +609,7 @@ export default function LandingPage() {
               >
                 <Github className="w-6 h-6" />
               </Link>
-            
+
               <Link
                 href="https://www.linkedin.com/in/kenneth-olivas/"
                 target="_blank"
@@ -598,7 +618,6 @@ export default function LandingPage() {
               >
                 <Linkedin className="w-6 h-6" />
               </Link>
-            
             </div>
           </div>
         </div>

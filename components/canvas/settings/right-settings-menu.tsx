@@ -16,6 +16,7 @@ import {
     Copy,
     Check,
     Settings,
+    Github,
 } from "lucide-react";
 import {
     Tooltip,
@@ -292,6 +293,18 @@ export function RightSettingsMenu({
                                                     ))}
                                                 </div>
                                             </ScrollArea>
+                                            <div className="flex flex-col items-center gap-2 pt-4 border-t mt-2 text-center text-sm text-muted-foreground">
+                                                <p>© <a href="https://kennetholivas.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Kenneth Olivas</a></p>
+                                                <a
+                                                    href="https://github.com/KennethOlivas/zen-draw"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 hover:text-foreground transition-colors"
+                                                >
+                                                    <Github className="h-4 w-4" />
+                                                    KennethOlivas/zen-draw
+                                                </a>
+                                            </div>
                                         </DialogContent>
                                     </Dialog>
                                 </div>
@@ -432,6 +445,6 @@ export function RightSettingsMenu({
 
             {/* Settings Modal moved to DrawingApp */}
 
-        </TooltipProvider>
+        </TooltipProvider >
     );
 }
