@@ -1,7 +1,7 @@
 import { getProject } from "@/actions/project";
 import { DrawingApp } from "@/components/canvas/core/drawing-app";
 import { Data } from "@/types/canvas-types";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { projectId } = await params;
   const project = await getProject(projectId);
 
-  if (!project) {
+  if (!project || "error" in project) {
     return {
       title: "Project Not Found",
     };
@@ -35,6 +35,18 @@ export default async function ProjectBoardPage({ params }: PageProps) {
   const project = await getProject(projectId);
 
   if (!project) {
+    notFound();
+  }
+
+  if ("error" in project) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      redirect("/login");
+    }
+
     notFound();
   }
 

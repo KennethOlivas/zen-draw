@@ -21,7 +21,7 @@ export async function getProject(id: string) {
     const canView = isOwner || project.isPublic;
 
     if (!canView) {
-        return null;
+        return { error: "UNAUTHORIZED" };
     }
 
     return {

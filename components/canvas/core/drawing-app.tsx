@@ -111,6 +111,21 @@ export function DrawingApp({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = async (name: string, asNew: boolean = false) => {
+    // If user is not authenticated, save to local storage and redirect to login
+    if (!user) {
+      const projectData = {
+        name,
+        elements: state.elements,
+        zoom: state.zoom,
+        panOffset: state.panOffset,
+        backgroundColor: state.backgroundColor,
+      }
+      localStorage.setItem("zen-draw-pending-project", JSON.stringify(projectData))
+      toast.info("Please login to save your project")
+      router.push(`/login?callbackUrl=/board?action=restore_pending`)
+      return
+    }
+
     try {
       const thumbnail = await generateThumbnail(state.elements, state.backgroundColor)
 
@@ -133,6 +148,40 @@ export function DrawingApp({
       toast.error("Failed to save project")
     }
   }
+
+  // Check for pending save on mount
+  useEffect(() => {
+    const checkPendingSave = async () => {
+      const action = searchParams?.get("action")
+      if (action === "restore_pending" && user) {
+        const pendingDataStr = localStorage.getItem("zen-draw-pending-project")
+        if (pendingDataStr) {
+          try {
+            const pendingData = JSON.parse(pendingDataStr)
+
+            // Create the project immediately
+            const thumbnail = await generateThumbnail(pendingData.elements, pendingData.backgroundColor)
+            const newProject = await createProject(pendingData.name, {
+              elements: pendingData.elements,
+              zoom: pendingData.zoom,
+              panOffset: pendingData.panOffset,
+              backgroundColor: pendingData.backgroundColor
+            }, thumbnail)
+
+            // Cleanup
+            localStorage.removeItem("zen-draw-pending-project")
+            toast.success("Project restored and saved successfully")
+            router.push(`/board/${newProject.id}`)
+          } catch (error) {
+            console.error("Failed to restore project", error)
+            toast.error("Failed to restore pending project")
+          }
+        }
+      }
+    }
+
+    checkPendingSave()
+  }, [searchParams, user, router])
 
   const handleShare = async (isPublic: boolean, permission: "VIEW" | "EDIT") => {
     if (!projectId) return

@@ -22,7 +22,7 @@ export default async function ProjectsPage() {
   });
 
   if (!session) {
-    redirect("/");
+    redirect("/login");
   }
 
   const projects = await getProjects();
@@ -34,7 +34,7 @@ export default async function ProjectsPage() {
           <h1 className="text-4xl font-bold text-primary">My Projects</h1>
           <div className="flex items-center gap-4">
             <ModeToggle />
-            <SettingsTrigger user={session.user as any} />
+            <SettingsTrigger user={session.user} />
             <Link href="/board?new=true">
               <Button>
                 <Plus className="w-4 h-4" />
