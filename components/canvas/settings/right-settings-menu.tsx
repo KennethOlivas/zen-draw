@@ -17,6 +17,7 @@ import {
     Check,
     Settings,
     Github,
+    Pencil,
 } from "lucide-react";
 import {
     Tooltip,
@@ -62,6 +63,7 @@ interface RightSettingsMenuProps {
     onSaveFile: () => void;
     onLoadFile: () => void;
     onOpenSettings: () => void;
+    onRename?: (newName: string) => void;
 }
 
 export function RightSettingsMenu({
@@ -76,6 +78,7 @@ export function RightSettingsMenu({
     onSaveFile,
     onLoadFile,
     onOpenSettings,
+    onRename,
 }: RightSettingsMenuProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [contentVisible, setContentVisible] = useState(false);
@@ -87,6 +90,10 @@ export function RightSettingsMenu({
         initialPublicPermission as "VIEW" | "EDIT"
     );
     const [copied, setCopied] = useState(false);
+
+    // Rename state
+    const [isRenameOpen, setIsRenameOpen] = useState(false);
+    const [renameValue, setRenameValue] = useState(projectName);
 
     const pathname = usePathname();
     const [fullUrl, setFullUrl] = useState("");
@@ -122,6 +129,13 @@ export function RightSettingsMenu({
     const handleShareSave = () => {
         onShare(isPublic, permission);
         setIsShareOpen(false);
+    };
+
+    const handleRename = () => {
+        if (onRename) {
+            onRename(renameValue);
+        }
+        setIsRenameOpen(false);
     };
 
     const copyLink = () => {
@@ -214,10 +228,29 @@ export function RightSettingsMenu({
                                     </div>
                                 )}
 
+                                {/* Mobile-only Project Title & Edit */}
+
+                                {/* Mobile-only Project Title & Edit */}
+                                <div className="md:hidden" style={getAnimationStyle(150)}>
+                                    <Button variant="ghost"
+                                        onClick={() => {
+                                            setRenameValue(projectName);
+                                            setIsRenameOpen(true);
+                                        }}
+                                        className="w-full justify-start gap-2 h-9" title={projectName}>
+
+                                        <Pencil className="h-4 w-4" />
+                                        <span>{projectName}</span>
+                                    </Button>
+
+                                </div>
+
+
+
                                 {canEdit && <Separator style={getAnimationStyle(125)} />}
 
                                 {/* File Operations */}
-                                <div style={getAnimationStyle(150)}>
+                                <div style={getAnimationStyle(200)}>
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start gap-2 h-9"
@@ -228,7 +261,7 @@ export function RightSettingsMenu({
                                     </Button>
                                 </div>
 
-                                <div style={getAnimationStyle(200)}>
+                                <div style={getAnimationStyle(250)}>
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start gap-2 h-9"
@@ -240,7 +273,7 @@ export function RightSettingsMenu({
                                 </div>
 
                                 {/* Settings */}
-                                <div style={getAnimationStyle(235)}>
+                                <div style={getAnimationStyle(300)}>
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start gap-2 h-9"
@@ -251,10 +284,10 @@ export function RightSettingsMenu({
                                     </Button>
                                 </div>
 
-                                <Separator style={getAnimationStyle(225)} />
+                                <Separator style={getAnimationStyle(325)} />
 
                                 {/* Help */}
-                                <div style={getAnimationStyle(250)}>
+                                <div style={getAnimationStyle(350)}>
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <Button
@@ -311,7 +344,7 @@ export function RightSettingsMenu({
 
                                 {/* Login for non-editors */}
                                 {!canEdit && (
-                                    <div style={getAnimationStyle(300)}>
+                                    <div style={getAnimationStyle(350)}>
                                         <Link href="/login">
                                             <Button
                                                 variant="ghost"
@@ -380,6 +413,31 @@ export function RightSettingsMenu({
                             Cancel
                         </Button>
                         <Button onClick={handleSaveAs}>Save</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Rename Dialog */}
+            <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Rename Project</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Input
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            placeholder="Project Name"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") handleRename();
+                            }}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsRenameOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleRename}>Save</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

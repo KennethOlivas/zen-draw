@@ -375,6 +375,7 @@ export function DrawingApp({
               setSettingsTab("user");
               setIsSettingsOpen(true);
             }}
+            onRename={handleRename}
           />
 
           <SettingsModal

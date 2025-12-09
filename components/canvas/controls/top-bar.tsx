@@ -21,7 +21,6 @@ interface TopBarProps {
 }
 
 export function TopBar({
-  projectId,
   projectName,
   isOwner,
   onRename,
@@ -42,7 +41,7 @@ export function TopBar({
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <div className="flex items-center gap-2 px-2">
+        <div className="hidden md:flex items-center gap-2 px-2">
           <span className="font-bold text-sm">{projectName}</span>
           {isOwner && (
             <Button
