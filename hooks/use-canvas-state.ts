@@ -493,5 +493,61 @@ export function useCanvasState(initialData?: any, projectId?: string, forceNew?:
     undo,
     redo,
     pushHistory,
+    copyElements: async () => {
+      const selected = state.elements.filter((el) => state.selectedIds.includes(el.id))
+      if (selected.length === 0) return
+
+      const data = JSON.stringify({
+        type: "zen-draw-clipboard",
+        elements: selected,
+      })
+
+      try {
+        await navigator.clipboard.writeText(data)
+      } catch (err) {
+        console.error("Failed to copy to clipboard:", err)
+      }
+    },
+    cutElements: async () => {
+      const selected = state.elements.filter((el) => state.selectedIds.includes(el.id))
+      if (selected.length === 0) return
+
+      const data = JSON.stringify({
+        type: "zen-draw-clipboard",
+        elements: selected,
+      })
+
+      try {
+        await navigator.clipboard.writeText(data)
+        deleteElements(state.selectedIds)
+      } catch (err) {
+        console.error("Failed to cut to clipboard:", err)
+      }
+    },
+    pasteElements: async () => {
+      try {
+        const text = await navigator.clipboard.readText()
+        const data = JSON.parse(text)
+
+        if (data.type === "zen-draw-clipboard" && Array.isArray(data.elements)) {
+          const newElements = data.elements.map((el: CanvasElement) => ({
+            ...el,
+            id: generateId(),
+            seed: generateSeed(),
+            x: el.x + 20, // Offset for visibility
+            y: el.y + 20,
+          }))
+
+          setState((prev) => ({
+            ...prev,
+            elements: [...prev.elements, ...newElements],
+            selectedIds: newElements.map((el: CanvasElement) => el.id),
+          }))
+          pushHistory()
+        }
+      } catch (err) {
+        console.error("Failed to paste from clipboard:", err)
+      }
+    },
   }
 }

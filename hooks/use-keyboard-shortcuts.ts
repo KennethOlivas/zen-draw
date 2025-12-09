@@ -15,6 +15,9 @@ interface UseKeyboardShortcutsProps {
     bringForward: (ids: string[]) => void
     bringToFront: (ids: string[]) => void
     duplicateElements: (ids: string[]) => void
+    copy: () => void
+    cut: () => void
+    paste: () => void
 }
 
 export function useKeyboardShortcuts({
@@ -30,6 +33,9 @@ export function useKeyboardShortcuts({
     bringForward,
     bringToFront,
     duplicateElements,
+    copy,
+    cut,
+    paste,
 }: UseKeyboardShortcutsProps) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,6 +49,31 @@ export function useKeyboardShortcuts({
                 setTool(TOOL_SHORTCUTS[key])
                 return
             }
+
+            // Copy
+            if ((e.metaKey || e.ctrlKey) && key === "c") {
+                e.preventDefault()
+                copy()
+                return
+            }
+
+            // Cut
+            if ((e.metaKey || e.ctrlKey) && key === "x") {
+                e.preventDefault()
+                cut()
+                return
+            }
+
+            // Paste
+            if ((e.metaKey || e.ctrlKey) && key === "v") {
+                // Don't prevent default here to allow browser permission prompt if needed, 
+                // but actually we need to prevent default to avoid double paste in some contexts?
+                // Usually for canvas app we want complete control.
+                e.preventDefault()
+                paste()
+                return
+            }
+
 
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && key === "[") {
                 e.preventDefault()
@@ -112,5 +143,8 @@ export function useKeyboardShortcuts({
         bringForward,
         bringToFront,
         duplicateElements,
+        copy,
+        cut,
+        paste
     ])
 }

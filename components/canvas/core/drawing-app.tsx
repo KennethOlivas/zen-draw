@@ -108,6 +108,9 @@ export function DrawingApp({
     pushHistory,
     setGridMode,
     setSnapToGrid,
+    copyElements,
+    cutElements,
+    pasteElements,
   } = useCanvasState(canvasInitialData, projectId, forceNew)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -257,6 +260,9 @@ export function DrawingApp({
     bringForward,
     bringToFront,
     duplicateElements,
+    copy: copyElements,
+    cut: cutElements,
+    paste: pasteElements,
   })
 
   const handleLoad = () => {
@@ -415,6 +421,13 @@ export function DrawingApp({
         snapToGrid={state.snapToGrid}
         gridSize={gridSize}
         snapThreshold={snapThreshold}
+        onCopy={copyElements}
+        onPaste={pasteElements}
+        onCut={cutElements}
+        onBringToFront={() => state.selectedIds.length > 0 && bringToFront(state.selectedIds)}
+        onBringForward={() => state.selectedIds.length > 0 && bringForward(state.selectedIds)}
+        onSendBackward={() => state.selectedIds.length > 0 && sendBackward(state.selectedIds)}
+        onSendToBack={() => state.selectedIds.length > 0 && sendToBack(state.selectedIds)}
       />
     </div>
   )
